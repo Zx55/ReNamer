@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.AppController">
+    <MenuBar prefHeight="30.0" prefWidth="500.0">
+        <Menu mnemonicParsing="false" text="文件">
+            <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
+            <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="添加文件夹" />
+            <MenuItem mnemonicParsing="false" onAction="#clearFiles" text="清空文件" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#selectAllFiles" text="选择全部" />
+            <MenuItem mnemonicParsing="false" onAction="#unselectAllFiles" text="取消选择全部" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <Menu mnemonicParsing="false" text="分栏">
+                <CheckMenuItem fx:id="fileNameColumnState" mnemonicParsing="false" onAction="#alterFileNameColumn" selected="true" text="文件名" />
+                <CheckMenuItem fx:id="previewColumnState" mnemonicParsing="false" onAction="#alterPreviewColumn" selected="true" text="新名称" />
+                <CheckMenuItem fx:id="errorColumnState" mnemonicParsing="false" onAction="#alterErrorColumn" selected="true" text="错误信息" />
+                <CheckMenuItem fx:id="extensionColumnState" mnemonicParsing="false" onAction="#alterExtensionColumn" text="扩展名" />
+                <CheckMenuItem fx:id="parentColumnState" mnemonicParsing="false" onAction="#alterParentColumn" text="父目录" />
+                <CheckMenuItem fx:id="sizeColumnState" mnemonicParsing="false" onAction="#alterSizeColumn" text="大小(字节)" />
+                <CheckMenuItem fx:id="sizeKBColumnState" mnemonicParsing="false" onAction="#alterSizeKBColumn" text="大小(KB)" />
+                <CheckMenuItem fx:id="sizeMBColumnState" mnemonicParsing="false" onAction="#alterSizeMBColumn" text="大小(MB)" />
+                <CheckMenuItem fx:id="createdTimeColumnState" mnemonicParsing="false" onAction="#alterCreatedTimeColumn" text="创建时间" />
+                <CheckMenuItem fx:id="modifiedTimeColumnState" mnemonicParsing="false" onAction="#alterModifiedTime" text="修改时间" />
+            </Menu>
+        </Menu>
+        <Menu mnemonicParsing="false" text="规则">
+            <MenuItem mnemonicParsing="false" text="添加规则" />
+            <MenuItem mnemonicParsing="false" onAction="#clearRules" text="清空规则" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部" />
+            <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="预设">
+            <MenuItem mnemonicParsing="false" text="Action 1" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="设置">
+            <MenuItem mnemonicParsing="false" text="Action 1" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="帮助">
+            <MenuItem mnemonicParsing="false" text="Action 1" />
+        </Menu>
+    </MenuBar>
+    <TableView fx:id="ruleTable" layoutY="75.0" prefHeight="270.0" prefWidth="500.0">
+        <placeholder>
+            <Label text="双击添加规则" />
+        </placeholder>
+        <columns>
+            <TableColumn fx:id="ruleNoColumn" prefWidth="40.0" text="序号" />
+            <TableColumn fx:id="ruleSelectedColumn" prefWidth="40.0" text="选择" />
+            <TableColumn fx:id="ruleTypeColumn" prefWidth="100.0" text="规则" />
+            <TableColumn fx:id="ruleDescriptionColumn" prefWidth="320.0" text="说明" />
+        </columns>
+      <contextMenu>
+         <ContextMenu>
+           <items>
+             <MenuItem mnemonicParsing="false" onAction="#addRule" text="添加规则" />
+               <MenuItem fx:id="removeRuleContextMenu" mnemonicParsing="false" onAction="#removeRule" text="移除规则" />
+               <MenuItem mnemonicParsing="false" onAction="#clearRules" text="清空规则" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+               <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部" />
+               <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部" />
+           </items>
+         </ContextMenu>
+      </contextMenu>
+    </TableView>
+    <TableView fx:id="fileTable" layoutY="380.0" prefHeight="300.0" prefWidth="500.0">
+        <placeholder>
+            <Label text="双击添加文件" />
+        </placeholder>
+        <columns>
+            <TableColumn fx:id="fileNoColumn" prefWidth="40.0" text="序号" />
+            <TableColumn fx:id="fileSelectedColumn" prefWidth="40.0" text="选择" />
+            <TableColumn fx:id="fileSourceNameColumn" prefWidth="160.0" text="文件名" />
+            <TableColumn fx:id="filePreviewNameColumn" prefWidth="160.0" text="新名称" />
+            <TableColumn fx:id="fileErrorColumn" prefWidth="100.0" text="错误信息" />
+        </columns>
+      <contextMenu>
+         <ContextMenu>
+           <items>
+             <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
+               <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="添加文件夹" />
+               <MenuItem fx:id="removeFileContextMenu" mnemonicParsing="false" onAction="#removeFile" text="移除文件" />
+               <MenuItem mnemonicParsing="false" onAction="#clearFiles" text="清空文件" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+               <MenuItem mnemonicParsing="false" onAction="#selectAllFiles" text="选择全部" />
+               <MenuItem mnemonicParsing="false" onAction="#unselectAllFiles" text="取消选择全部" />
+           </items>
+         </ContextMenu>
+      </contextMenu>
+    </TableView>
+</AnchorPane>
