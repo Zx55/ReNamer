@@ -11,7 +11,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.AppController">
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="500.0"
+            xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="renamer.app.controller.AppController">
     <MenuBar prefHeight="30.0" prefWidth="500.0">
         <Menu mnemonicParsing="false" text="文件">
             <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
@@ -45,10 +47,12 @@
             <MenuItem mnemonicParsing="false" text="Action 1" />
         </Menu>
         <Menu mnemonicParsing="false" text="设置">
-            <MenuItem mnemonicParsing="false" text="Action 1" />
+            <MenuItem mnemonicParsing="false" onAction="#showConfigEditor" text="选项" />
+         <MenuItem mnemonicParsing="false" text="恢复默认" />
         </Menu>
         <Menu mnemonicParsing="false" text="帮助">
             <MenuItem mnemonicParsing="false" text="Action 1" />
+         <MenuItem mnemonicParsing="false" text="Unspecified Action" />
         </Menu>
     </MenuBar>
     <TableView fx:id="ruleTable" layoutY="75.0" prefHeight="270.0" prefWidth="500.0">
@@ -61,18 +65,18 @@
             <TableColumn fx:id="ruleTypeColumn" prefWidth="100.0" text="规则" />
             <TableColumn fx:id="ruleDescriptionColumn" prefWidth="320.0" text="说明" />
         </columns>
-      <contextMenu>
-         <ContextMenu>
-           <items>
-             <MenuItem mnemonicParsing="false" onAction="#addRule" text="添加规则" />
-               <MenuItem fx:id="removeRuleContextMenu" mnemonicParsing="false" onAction="#removeRule" text="移除规则" />
-               <MenuItem mnemonicParsing="false" onAction="#clearRules" text="清空规则" />
-               <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部" />
-               <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部" />
-           </items>
-         </ContextMenu>
-      </contextMenu>
+        <contextMenu>
+            <ContextMenu>
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#addRule" text="添加规则" />
+                    <MenuItem fx:id="removeRuleContextMenu" mnemonicParsing="false" onAction="#removeRule" text="移除规则" />
+                    <MenuItem mnemonicParsing="false" onAction="#clearRules" text="清空规则" />
+                    <SeparatorMenuItem mnemonicParsing="false" />
+                    <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部" />
+                    <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
     </TableView>
     <TableView fx:id="fileTable" layoutY="380.0" prefHeight="300.0" prefWidth="500.0">
         <placeholder>
@@ -85,18 +89,18 @@
             <TableColumn fx:id="filePreviewNameColumn" prefWidth="160.0" text="新名称" />
             <TableColumn fx:id="fileErrorColumn" prefWidth="100.0" text="错误信息" />
         </columns>
-      <contextMenu>
-         <ContextMenu>
-           <items>
-             <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
-               <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="添加文件夹" />
-               <MenuItem fx:id="removeFileContextMenu" mnemonicParsing="false" onAction="#removeFile" text="移除文件" />
-               <MenuItem mnemonicParsing="false" onAction="#clearFiles" text="清空文件" />
-               <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" onAction="#selectAllFiles" text="选择全部" />
-               <MenuItem mnemonicParsing="false" onAction="#unselectAllFiles" text="取消选择全部" />
-           </items>
-         </ContextMenu>
-      </contextMenu>
+        <contextMenu>
+            <ContextMenu>
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
+                    <MenuItem mnemonicParsing="false" onAction="#addDirectory" text="添加文件夹" />
+                    <MenuItem fx:id="removeFileContextMenu" mnemonicParsing="false" onAction="#removeFile" text="移除文件" />
+                    <MenuItem mnemonicParsing="false" onAction="#clearFiles" text="清空文件" />
+                    <SeparatorMenuItem mnemonicParsing="false" />
+                    <MenuItem mnemonicParsing="false" onAction="#selectAllFiles" text="选择全部" />
+                    <MenuItem mnemonicParsing="false" onAction="#unselectAllFiles" text="取消选择全部" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
     </TableView>
 </AnchorPane>

@@ -15,6 +15,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * 程序主体窗口
+ */
 public class App extends Application {
     public static void main(String[] args) {
         launch(args);
@@ -22,11 +25,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("layout/app.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("layout/App.fxml"));
         primaryStage.setTitle("ReNamer");
         primaryStage.setScene(new Scene(root, 500, 700));
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
-
-
 }

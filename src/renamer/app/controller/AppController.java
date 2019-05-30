@@ -13,6 +13,7 @@ import renamer.model.file.*;
 import renamer.model.rule.Rule;
 import renamer.model.rule.generic.ExtensionRule;
 import renamer.model.wrapper.*;
+import renamer.util.Util;
 
 import java.io.File;
 import java.net.URL;
@@ -20,16 +21,18 @@ import java.util.*;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseButton;
 import javafx.stage.*;
-import renamer.util.Util;
 
+/**
+ * 主体窗口布局{@code ../layout/App.fxml}对应的控制对象
+ */
 public class AppController implements Initializable {
     /* FXML组件 */
-
     // App的根元素
     @FXML private AnchorPane root;
     // 文件列表和每一列
@@ -83,7 +86,8 @@ public class AppController implements Initializable {
             ruleTable.getItems().add(new RuleWrapper(rule));
         }
 
-        String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        // String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
         try {
             FileModel[] files = {
                     new FileModel(parentDir + "main.m"),
@@ -424,6 +428,22 @@ public class AppController implements Initializable {
             TableColumn<FileWrapper, String> newColumn = new TableColumn<>(columnName);
             bindPropertyWithColumn(newColumn, key);
             columns.add(newColumn);
+        }
+    }
+
+    /**
+     * 打开配置编辑器
+     */
+    public void showConfigEditor() {
+        try {
+            Stage configEditor = new Stage();
+            Parent root = FXMLLoader.load(getClass().getResource("../layout/ConfigEditor.fxml"));
+            configEditor.setTitle("设置");
+            configEditor.setScene(new Scene(root, 400, 600));
+            configEditor.setResizable(false);
+            configEditor.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

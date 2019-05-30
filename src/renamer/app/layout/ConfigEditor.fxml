@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.ConfigEditorController">
+    <CheckBox fx:id="autoPreviewWhenRulesChange" layoutX="48.0" layoutY="30.0" mnemonicParsing="false" text="更改规则后自动预览" />
+    <CheckBox fx:id="autoPreviewWhenFilesAdded" layoutX="48.0" layoutY="60.0" mnemonicParsing="false" text="添加文件后自动预览" />
+    <CheckBox fx:id="highlightChangedFiles" layoutX="48.0" layoutY="90.0" mnemonicParsing="false" onAction="#setColorPickerDisable" text="高亮更改后的文件名" />
+    <Label layoutX="73.0" layoutY="120.0" text="高亮配色" />
+    <ColorPicker fx:id="highlightColor" layoutX="136.0" layoutY="115.0" />
+    <Separator layoutX="36.0" layoutY="155.0" prefHeight="3.0" prefWidth="332.0" />
+    <CheckBox fx:id="displayMsgAfterRename" layoutX="48.0" layoutY="175.0" mnemonicParsing="false" text="成功重命名后提示信息" />
+    <CheckBox fx:id="exitAfterRename" layoutX="48.0" layoutY="205.0" mnemonicParsing="false" text="成功重命名后退出程序" />
+    <CheckBox fx:id="clearRulesAfterRename" layoutX="48.0" layoutY="235.0" mnemonicParsing="false" text="重名后清空规则列表" />
+    <CheckBox fx:id="clearFilesAfterRename" layoutX="48.0" layoutY="265.0" mnemonicParsing="false" text="重命名后清空文件列表" />
+    <CheckBox fx:id="clearRenamedFilesAfterRename" layoutX="48.0" layoutY="295.0" mnemonicParsing="false" text="重命名后移除修改文件" />
+    <Separator layoutX="36.0" layoutY="330.0" prefHeight="3.0" prefWidth="332.0" />
+    <Label layoutX="72.0" layoutY="345.0" text="日期格式 (输入回车确定)" />
+    <TextField fx:id="dateFormat" layoutX="72.0" layoutY="375.0" onAction="#setDatePreview" prefHeight="28.0" prefWidth="225.0" />
+    <Label layoutX="72.0" layoutY="415.0" text="预览" />
+    <Label fx:id="datePreviewLabel" layoutX="72.0" layoutY="445.0" text="时间预览" />
+    <Separator layoutX="36.0" layoutY="480.0" prefHeight="3.0" prefWidth="332.0" />
+    <CheckBox fx:id="saveRulesOnExitLoadOnStartup" layoutX="48.0" layoutY="500.0" mnemonicParsing="false" text="退出时保存规则集，下次启动时加载" />
+    <Button layoutX="70.0" layoutY="545.0" mnemonicParsing="false" onAction="#saveConfig" prefHeight="30.0" prefWidth="110.0" text="保存" />
+    <Button layoutX="220.0" layoutY="545.0" mnemonicParsing="false" onAction="#exitStage" prefHeight="30.0" prefWidth="110.0" text="取消" />
+</AnchorPane>

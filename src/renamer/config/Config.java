@@ -37,7 +37,7 @@ public class Config {
     // 重命名后提示信息
     private boolean displayMsgAfterRename;
     // 重命名后退出程序
-    private boolean closeProgramAfterRename;
+    private boolean exitAfterRename;
     // 重命名后清空规则容器
     private boolean clearRulesAfterRename;
     // 重命名后清空文件容器
@@ -55,7 +55,7 @@ public class Config {
             "highlightChangedFiles",
             "highlightColor",
             "displayMsgAfterRename",
-            "closeProgramAfterRename",
+            "exitAfterRename",
             "clearRulesAfterRename",
             "clearFilesAfterRename",
             "clearRenamedFilesAfterRename",
@@ -124,6 +124,18 @@ public class Config {
     }
 
     /**
+     * 根据键获取配置选项
+     * @param key 要获取的键字符串
+     * @return 键对应的布尔值
+     * @throws ConfigParseException 当键不合法时抛出异常
+     * @throws StringToBooleanParseException 字符串转换为布尔值出错抛出异常
+     */
+    public boolean getBoolean(String key)
+            throws ConfigParseException, StringToBooleanParseException {
+        return stringToBoolean(get(key));
+    }
+
+    /**
      * 根据键值对修改配置
      * @param key 要修改配置的键字符串
      * @param value 要修改配置的值字符串
@@ -156,10 +168,10 @@ public class Config {
         autoPreviewWhenRulesChange = true;
         autoPreviewWhenFilesAdded = true;
         highlightChangedFiles = true;
-        highlightColor = "red";
+        highlightColor = "#ff0000";
 
         displayMsgAfterRename = true;
-        closeProgramAfterRename = false;
+        exitAfterRename = false;
         clearRulesAfterRename = false;
         clearFilesAfterRename = false;
         clearRenamedFilesAfterRename = false;
@@ -182,6 +194,23 @@ public class Config {
             }
         } catch (IndexOutOfBoundsException e) {
             throw new ConfigParseException();
+        }
+    }
+
+    /**
+     * 将字符串能转换为{@code boolean}值
+     * @param string 布尔字符串
+     * @return 字符串对应的布尔值
+     * @throws StringToBooleanParseException 转换出错抛出异常
+     */
+    private static boolean stringToBoolean(String string) throws StringToBooleanParseException {
+        switch (string) {
+            case "true":
+                return true;
+            case "false":
+                return false;
+            default:
+                throw new StringToBooleanParseException();
         }
     }
 }
