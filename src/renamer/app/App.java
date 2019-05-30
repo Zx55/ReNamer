@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import renamer.config.Config;
 
 /**
  * 程序主体窗口
@@ -26,9 +27,15 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("layout/App.fxml"));
+
         primaryStage.setTitle("ReNamer");
         primaryStage.setScene(new Scene(root, 500, 700));
         primaryStage.setResizable(false);
+        primaryStage.setOnCloseRequest(event -> {
+            Config.getConfig().dumpConfig();
+            System.exit(0);
+        });
+
         primaryStage.show();
     }
 }

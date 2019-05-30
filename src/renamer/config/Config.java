@@ -162,7 +162,7 @@ public class Config {
     /**
      * 初始化为默认配置
      */
-    private void initialize() {
+    public void initialize() {
         saveRulesOnExitLoadOnStartup = false;
 
         autoPreviewWhenRulesChange = true;

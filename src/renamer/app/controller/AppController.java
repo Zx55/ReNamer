@@ -9,6 +9,7 @@
 
 package renamer.app.controller;
 
+import renamer.config.Config;
 import renamer.model.file.*;
 import renamer.model.rule.Rule;
 import renamer.model.rule.generic.ExtensionRule;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -34,7 +34,7 @@ import javafx.stage.*;
 public class AppController implements Initializable {
     /* FXML组件 */
     // App的根元素
-    @FXML private AnchorPane root;
+    @FXML private AnchorPane appRoot;
     // 文件列表和每一列
     @FXML private TableView<FileWrapper> fileTable;
     @FXML private TableColumn<FileWrapper, String> fileNoColumn;
@@ -66,7 +66,10 @@ public class AppController implements Initializable {
     private Integer selectedRuleIndex;
     private Integer selectedFileIndex;
 
-    // 初始化
+    /**
+     * 初始化{@code App}界面
+     * 初始化{@code TableView}并绑定每一列和对象属性
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         selectedFileIndex = null;
@@ -86,8 +89,8 @@ public class AppController implements Initializable {
             ruleTable.getItems().add(new RuleWrapper(rule));
         }
 
-        // String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
-        String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        //String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
         try {
             FileModel[] files = {
                     new FileModel(parentDir + "main.m"),
@@ -121,7 +124,7 @@ public class AppController implements Initializable {
                 removeFileContextMenu.setDisable(true);
                 // 在空白区域双击左键添加文件
                 if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addFile(null);
+                    addFile();
                 }
             }
         });
@@ -136,7 +139,7 @@ public class AppController implements Initializable {
                     selectedFileIndex = null;
                     // 在空白区域双击左键添加文件
                     if (event.getClickCount() == 2 && button == MouseButton.PRIMARY) {
-                        addFile(null);
+                        addFile();
                     }
                     removeFileContextMenu.setDisable(true);
                 } else {
@@ -168,21 +171,21 @@ public class AppController implements Initializable {
                 removeRuleContextMenu.setDisable(true);
                 // 在空白区域双击左键添加规则
                 if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addRule(null);
+                    addRule();
                 }
             }
         });
         // 绑定规则表格行鼠标事件
         ruleTable.setRowFactory(table -> {
             TableRow<RuleWrapper> row = new TableRow<>();
-            row.setOnMouseClicked((event -> {
+            row.setOnMouseClicked(event -> {
                 MouseButton button = event.getButton();
 
                 if (row.isEmpty()) {
                     selectedFileIndex = null;
                     // 在空白区域双击左键添加规则
                     if (event.getClickCount() == 2 && button == MouseButton.PRIMARY) {
-                        addRule(null);
+                        addRule();
                     }
                     removeRuleContextMenu.setDisable(true);
                 } else {
@@ -190,7 +193,7 @@ public class AppController implements Initializable {
                     selectedRuleIndex = row.getIndex();
                     removeRuleContextMenu.setDisable(false);
                 }
-            }));
+            });
 
             return row;
         });
@@ -236,7 +239,7 @@ public class AppController implements Initializable {
      * @param column 选择列
      */
     private static void bindSelectedBoxWithColumn(TableColumn<Wrapper, Boolean> column) {
-        column.setCellFactory((col) -> new TableCell<>() {
+        column.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean selected, boolean empty) {
                 super.updateItem(selected, empty);
@@ -256,14 +259,13 @@ public class AppController implements Initializable {
 
     /**
      * 添加文件到{@code fileTable}中
-     * @param event 点击事件
      */
-    public void addFile(ActionEvent event) {
+    public void addFile() {
         FileChooser chooser = new FileChooser();
 
         chooser.setTitle("添加文件");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File file = chooser.showOpenDialog(root.getScene().getWindow());
+        File file = chooser.showOpenDialog(appRoot.getScene().getWindow());
 
         if (file != null) {
             try {
@@ -276,9 +278,8 @@ public class AppController implements Initializable {
 
     /**
      * 添加文件夹下的所有直接子文件到{@code fileTable}中
-     * @param event 点击事件
      */
-    public void addDirectory(ActionEvent event) {
+    public void addDirectory() {
         DirectoryChooser chooser = new DirectoryChooser();
         int errorCount = 0;
         int filesCount = 0;
@@ -286,7 +287,7 @@ public class AppController implements Initializable {
 
         chooser.setTitle("添加文件夹");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File directory = chooser.showDialog(root.getScene().getWindow());
+        File directory = chooser.showDialog(appRoot.getScene().getWindow());
 
         if (directory != null) {
             File[] files = directory.listFiles();
@@ -314,94 +315,129 @@ public class AppController implements Initializable {
         }
     }
 
-    // TODO: 添加规则
-    public void addRule(ActionEvent event) {
-        System.out.println("Add rule.");
+    /**
+     * 打开规则编辑器，添加新规则
+     */
+    public void addRule() {
+        editRule(null);
+    }
+
+    /**
+     * 打开规则编辑器，编辑规则
+     * @param rule 要编辑的规则
+     */
+    public void editRule(RuleWrapper rule) {
+        try {
+            Stage ruleEditor = new Stage();
+            String resourcePath = "../layout/";
+
+            if (rule == null) {
+                // 创建新规则默认载入插入规则的布局文件
+                resourcePath += RuleEditorController.getScenes()[0];
+            } else {
+                // 编辑规则根据选中规则的类型载入布局文件
+                resourcePath += RuleEditorController.getScenes()[rule.getTypeIndex()];
+            }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+
+            ruleEditor.setScene(new Scene(loader.load(), 600, 385));
+            RuleEditorController controller = loader.getController();
+            // 向规则编辑器传入要编辑的规则
+            controller.initRule(rule);
+
+            ruleEditor.setTitle("编辑规则");
+            ruleEditor.setResizable(false);
+            ruleEditor.initModality(Modality.APPLICATION_MODAL);
+
+            ruleEditor.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /* -- 清空/删除一个文件/规则处理函数 -- */
 
-    public void removeFile(ActionEvent event) {
+    public void removeFile() {
         if (selectedFileIndex != null) {
             fileTable.getItems().remove(selectedFileIndex.intValue());
             selectedFileIndex = null;
         }
     }
 
-    public void clearFiles(ActionEvent event) {
+    public void clearFiles() {
         fileTable.getItems().clear();
         selectedFileIndex = null;
     }
 
-    public void removeRule(ActionEvent event) {
+    public void removeRule() {
         if (selectedRuleIndex != null) {
             ruleTable.getItems().remove(selectedRuleIndex.intValue());
             selectedRuleIndex = null;
         }
     }
 
-    public void clearRules(ActionEvent event) {
+    public void clearRules() {
         ruleTable.getItems().clear();
         selectedRuleIndex = null;
     }
 
     /* -- 文件和规则菜单中(取消)选中全部处理函数 -- */
 
-    public void selectAllFiles(ActionEvent event) {
+    public void selectAllFiles() {
         fileTable.getItems().forEach(FileWrapper::select);
     }
 
-    public void unselectAllFiles(ActionEvent event) {
+    public void unselectAllFiles() {
         fileTable.getItems().forEach(FileWrapper::unselect);
     }
 
-    public void selectAllRules(ActionEvent event) {
+    public void selectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::select);
     }
 
-    public void unselectAllRules(ActionEvent event) {
+    public void unselectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::unselect);
     }
 
     /* -- 分栏子菜单中添加/去除分栏处理函数 -- */
 
-    public void alterFileNameColumn(ActionEvent event) {
+    public void alterFileNameColumn() {
         alterFileColumn(fileNameColumnState, "文件名", "fileName");
     }
 
-    public void alterPreviewColumn(ActionEvent event) {
+    public void alterPreviewColumn() {
         alterFileColumn(previewColumnState, "新名称", "preview");
     }
 
-    public void alterErrorColumn(ActionEvent event) {
+    public void alterErrorColumn() {
         alterFileColumn(errorColumnState, "错误信息", "error");
     }
 
-    public void alterExtensionColumn(ActionEvent event) {
+    public void alterExtensionColumn() {
         alterFileColumn(extensionColumnState, "扩展名", "extension");
     }
 
-    public void alterParentColumn(ActionEvent event) {
+    public void alterParentColumn() {
         alterFileColumn(parentColumnState, "父目录", "parent");
     }
 
-    public void alterSizeColumn(ActionEvent event) {
+    public void alterSizeColumn() {
         alterFileColumn(sizeColumnState, "大小(字节)", "sizeInBytes");
     }
 
-    public void alterSizeKBColumn(ActionEvent event) {
+    public void alterSizeKBColumn() {
         alterFileColumn(sizeKBColumnState, "大小(KB)", "sizeInKB");
     }
 
-    public void alterSizeMBColumn(ActionEvent event) {
+    public void alterSizeMBColumn() {
         alterFileColumn(sizeMBColumnState, "大小(MB)", "sizeInMB");
     }
 
-    public void alterCreatedTimeColumn(ActionEvent event) {
+    public void alterCreatedTimeColumn() {
         alterFileColumn(createdTimeColumnState, "创建时间", "createdTime");
     }
 
-    public void alterModifiedTime(ActionEvent event) {
+    public void alterModifiedTime() {
         alterFileColumn(modifiedTimeColumnState, "修改时间", "modifiedTime");
     }
 
@@ -438,12 +474,22 @@ public class AppController implements Initializable {
         try {
             Stage configEditor = new Stage();
             Parent root = FXMLLoader.load(getClass().getResource("../layout/ConfigEditor.fxml"));
+
             configEditor.setTitle("设置");
             configEditor.setScene(new Scene(root, 400, 600));
             configEditor.setResizable(false);
+            configEditor.initModality(Modality.APPLICATION_MODAL);
+
             configEditor.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 初始化配置选项
+     */
+    public void resetConfig() {
+        Config.getConfig().initialize();
     }
 }

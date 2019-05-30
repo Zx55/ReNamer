@@ -56,6 +56,11 @@ public class ReplaceRule extends RegExRule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 5;
+    }
+
+    @Override
     public String getDescription() {
         return super.getDescription() + ((wholeWordOnly) ? "(全字匹配)" : "");
     }

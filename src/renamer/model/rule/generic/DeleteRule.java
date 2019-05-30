@@ -60,6 +60,11 @@ public class DeleteRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 1;
+    }
+
+    @Override
     public String getDescription() {
         return "删除" + position.description() + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }

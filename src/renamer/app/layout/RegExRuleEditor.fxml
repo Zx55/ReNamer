@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="ruleEditorRoot" prefHeight="385.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.RuleEditorController">
+    <ChoiceBox fx:id="ruleTypeChoice" layoutX="50.0" layoutY="40.0" prefHeight="30.0" prefWidth="160.0" value="正则表达式规则">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="插入规则" />
+                <String fx:value="删除规则" />
+                <String fx:value="填充规则" />
+                <String fx:value="序列化规则" />
+                <String fx:value="移除规则" />
+                <String fx:value="替换规则" />
+                <String fx:value="正则表达式规则" />
+                <String fx:value="扩展名规则" />
+                <String fx:value="大小写规则" />
+            </FXCollections>
+        </items>
+    </ChoiceBox>
+    <Label layoutX="60.0" layoutY="100.0" text="查找表达式">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </Label>
+    <TextField fx:id="ReRuleFind" layoutX="150.0" layoutY="94.0" prefHeight="30.0" prefWidth="370.0" />
+    <Label layoutX="60.0" layoutY="142.0" text="替换表达式">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </Label>
+    <TextField fx:id="ReRuleReplace" layoutX="150.0" layoutY="136.0" prefHeight="30.0" prefWidth="370.0" />
+    <Label layoutX="150.0" layoutY="184.0" text="使用 $1...$9 来反向引用" />
+    <CheckBox fx:id="ReRuleIgnore" layoutX="60.0" layoutY="270.0" mnemonicParsing="false" selected="true" text="忽略扩展名">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </CheckBox>
+    <CheckBox fx:id="ReRuleCase" layoutX="200.0" layoutY="270.0" mnemonicParsing="false" text="区分大小写">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </CheckBox>
+    <Button layoutX="120.0" layoutY="315.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="确定">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </Button>
+    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="取消">
+        <font>
+            <Font size="13.0" />
+        </font>
+    </Button>
+</AnchorPane>

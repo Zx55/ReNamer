@@ -51,12 +51,16 @@ public class RuleWrapper implements Wrapper {
 
     /* -- 封装Rule的方法和属性 -- */
 
-    Rule getRule() {
+    public Rule getRule() {
         return rule;
     }
 
     public String getType() {
         return rule.getType();
+    }
+
+    public int getTypeIndex() {
+        return rule.getTypeIndex();
     }
 
     public String getDescription() {

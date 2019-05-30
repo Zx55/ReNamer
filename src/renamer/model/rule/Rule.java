@@ -26,9 +26,15 @@ public interface Rule {
 
     /**
      * 获取规则类型
-     * @return 规则类型
+     * @return 规则类型字符串
      */
     String getType();
+
+    /**
+     * 获取规则类型对应的序号
+     * @return 规则类型序号
+     */
+    int getTypeIndex();
 
     /**
      * 对规则的描述

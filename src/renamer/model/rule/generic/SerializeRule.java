@@ -106,6 +106,11 @@ public class SerializeRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 3;
+    }
+
+    @Override
     public String getDescription() {
         return "从" + increment.begIndex + "开始以步长为" + increment.step + "、重复" + increment.repeat +
                 "次" + ((increment.reset >= 1) ? "、每间隔" + increment.reset + "进行重置" : "") +

@@ -23,9 +23,12 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import renamer.util.Util;
 
+/**
+ * 设置编辑器窗口布局{@code ../layout/ConfigEditor.fxml}对应的控制对象
+ */
 public class ConfigEditorController implements Initializable {
     /* -- FXML组件 -- */
-    @FXML private AnchorPane root;
+    @FXML private AnchorPane configEditorRoot;
     @FXML private CheckBox autoPreviewWhenRulesChange;
     @FXML private CheckBox autoPreviewWhenFilesAdded;
     @FXML private CheckBox highlightChangedFiles;
@@ -104,15 +107,24 @@ public class ConfigEditorController implements Initializable {
             config.set("autoPreviewWhenFilesAdded", String.valueOf(autoPreviewWhenFilesAdded.isSelected()));
             config.set("highlightChangedFiles", String.valueOf(highlightChangedFiles.isSelected()));
             config.set("highlightColor", getHighlightColor());
+
             config.set("displayMsgAfterRename", String.valueOf(displayMsgAfterRename.isSelected()));
             config.set("exitAfterRename", String.valueOf(exitAfterRename.isSelected()));
             config.set("clearRulesAfterRename", String.valueOf(clearRulesAfterRename.isSelected()));
             config.set("clearFilesAfterRename", String.valueOf(clearFilesAfterRename.isSelected()));
             config.set("clearRenamedFilesAfterRename", String.valueOf(clearRenamedFilesAfterRename.isSelected()));
-            config.set("dateFormat", dateFormat.textProperty().getValue());
+
+            try {
+                String format = dateFormat.getText();
+                new SimpleDateFormat(format);
+                config.set("dateFormat", dateFormat.getText());
+            } catch (IllegalArgumentException e) {
+                Util.showAlert(Alert.AlertType.ERROR, "Error", "日期格式保存失败\n格式解析错误");
+            }
+
             config.set("saveRulesOnExitLoadOnStartup", String.valueOf(saveRulesOnExitLoadOnStartup.isSelected()));
 
-            Stage configEditor = (Stage) root.getScene().getWindow();
+            Stage configEditor = (Stage) configEditorRoot.getScene().getWindow();
             configEditor.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +136,7 @@ public class ConfigEditorController implements Initializable {
      * @param event 点击事件
      */
     public void exitStage(ActionEvent event) {
-        Stage configEditor = (Stage) root.getScene().getWindow();
+        Stage configEditor = (Stage) configEditorRoot.getScene().getWindow();
         configEditor.close();
     }
 
@@ -155,6 +167,7 @@ public class ConfigEditorController implements Initializable {
     private void setDatePreviewLabel(String dateFormat) {
         Date date = new Date();
         DateFormat formatter = new SimpleDateFormat(dateFormat);
+        formatter.setLenient(false);
         datePreviewLabel.textProperty().setValue(formatter.format(date));
     }
 }

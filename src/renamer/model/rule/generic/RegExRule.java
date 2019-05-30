@@ -87,6 +87,11 @@ public class RegExRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 6;
+    }
+
+    @Override
     public String getDescription() {
         return "替换" + getFlagDescription() + "\"" + getTargetPattern() + "\"为\"" +
                 replacePattern + "\"" + ((isCaseSensitive()) ? "(区分大小写)" : "") +

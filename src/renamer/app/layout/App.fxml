@@ -11,9 +11,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="500.0"
-            xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="renamer.app.controller.AppController">
+<AnchorPane fx:id="appRoot" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.AppController">
     <MenuBar prefHeight="30.0" prefWidth="500.0">
         <Menu mnemonicParsing="false" text="文件">
             <MenuItem mnemonicParsing="false" onAction="#addFile" text="添加文件" />
@@ -37,7 +35,7 @@
             </Menu>
         </Menu>
         <Menu mnemonicParsing="false" text="规则">
-            <MenuItem mnemonicParsing="false" text="添加规则" />
+            <MenuItem mnemonicParsing="false" onAction="#addRule" text="添加规则" />
             <MenuItem mnemonicParsing="false" onAction="#clearRules" text="清空规则" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部" />
@@ -48,7 +46,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="设置">
             <MenuItem mnemonicParsing="false" onAction="#showConfigEditor" text="选项" />
-         <MenuItem mnemonicParsing="false" text="恢复默认" />
+         <MenuItem mnemonicParsing="false" onAction="#resetConfig" text="恢复默认" />
         </Menu>
         <Menu mnemonicParsing="false" text="帮助">
             <MenuItem mnemonicParsing="false" text="Action 1" />

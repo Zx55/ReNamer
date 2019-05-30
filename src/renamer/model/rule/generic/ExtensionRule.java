@@ -53,6 +53,11 @@ public class ExtensionRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 7;
+    }
+
+    @Override
     public String getDescription() {
         return ((appendToEnd) ? "添加新扩展名" : "更改扩展名为") + newExtension;
     }

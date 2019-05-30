@@ -72,6 +72,11 @@ public class CaseRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 8;
+    }
+
+    @Override
     public String getDescription() {
         String description;
 

@@ -8,7 +8,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.ConfigEditorController">
+<AnchorPane fx:id="configEditorRoot" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.ConfigEditorController">
     <CheckBox fx:id="autoPreviewWhenRulesChange" layoutX="48.0" layoutY="30.0" mnemonicParsing="false" text="更改规则后自动预览" />
     <CheckBox fx:id="autoPreviewWhenFilesAdded" layoutX="48.0" layoutY="60.0" mnemonicParsing="false" text="添加文件后自动预览" />
     <CheckBox fx:id="highlightChangedFiles" layoutX="48.0" layoutY="90.0" mnemonicParsing="false" onAction="#setColorPickerDisable" text="高亮更改后的文件名" />
@@ -21,7 +21,7 @@
     <CheckBox fx:id="clearFilesAfterRename" layoutX="48.0" layoutY="265.0" mnemonicParsing="false" text="重命名后清空文件列表" />
     <CheckBox fx:id="clearRenamedFilesAfterRename" layoutX="48.0" layoutY="295.0" mnemonicParsing="false" text="重命名后移除修改文件" />
     <Separator layoutX="36.0" layoutY="330.0" prefHeight="3.0" prefWidth="332.0" />
-    <Label layoutX="72.0" layoutY="345.0" text="日期格式 (输入回车确定)" />
+    <Label layoutX="72.0" layoutY="345.0" text="日期格式 (输入回车预览)" />
     <TextField fx:id="dateFormat" layoutX="72.0" layoutY="375.0" onAction="#setDatePreview" prefHeight="28.0" prefWidth="225.0" />
     <Label layoutX="72.0" layoutY="415.0" text="预览" />
     <Label fx:id="datePreviewLabel" layoutX="72.0" layoutY="445.0" text="时间预览" />

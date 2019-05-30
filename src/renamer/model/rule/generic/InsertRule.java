@@ -64,6 +64,11 @@ public class InsertRule implements Rule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 0;
+    }
+
+    @Override
     public String getDescription() {
         return "插入\"" + pattern + "\"" + position.description() + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }

@@ -30,6 +30,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
+// FIXME: 添加不同填充模式，直接填充和补足长度
 public class PaddingRule implements Rule {
     // 填充字符
     private String paddingCharacter;
@@ -67,6 +68,11 @@ public class PaddingRule implements Rule {
     @Override
     public String getType() {
         return "填充";
+    }
+
+    @Override
+    public int getTypeIndex() {
+        return 2;
     }
 
     @Override

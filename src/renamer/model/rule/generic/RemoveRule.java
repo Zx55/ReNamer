@@ -46,6 +46,11 @@ public class RemoveRule extends ReplaceRule {
     }
 
     @Override
+    public int getTypeIndex() {
+        return 4;
+    }
+
+    @Override
     public String getDescription() {
         return "移除" + getFlagDescription() + "\"" + getTargetPattern() + "\"" +
                 ((isCaseSensitive()) ? "(区分大小写)" : "") + ((isWholeWordOnly()) ? "(全字匹配)" : "") +
