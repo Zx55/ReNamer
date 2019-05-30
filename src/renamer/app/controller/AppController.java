@@ -24,6 +24,7 @@ import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseButton;
 import javafx.stage.*;
@@ -74,8 +75,8 @@ public class AppController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         selectedFileIndex = null;
         selectedRuleIndex = null;
-        initializeFileTable();
-        initializeRuleTable();
+        bindFileTableColumn();
+        bindRuleTableColumn();
 
         Rule[] rules = {
                 new ExtensionRule("ini", true),
@@ -117,38 +118,19 @@ public class AppController implements Initializable {
      * 将每一列与{@code FileWrapper}对应属性绑定
      * 添加鼠标事件
      */
-    private void initializeFileTable() {
-        // 绑定文件表格鼠标事件
-        fileTable.setOnMouseClicked(event -> {
-            if (fileTable.getItems().isEmpty()) {
-                removeFileContextMenu.setDisable(true);
-                // 在空白区域双击左键添加文件
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addFile();
-                }
-            }
-        });
-
-        // 绑定文件表格行鼠标事件
+    private void bindFileTableColumn() {
+        // 绑定fileTable行鼠标事件
         fileTable.setRowFactory(table -> {
             TableRow<FileWrapper> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                MouseButton button = event.getButton();
-
-                if (row.isEmpty()) {
-                    selectedFileIndex = null;
-                    // 在空白区域双击左键添加文件
-                    if (event.getClickCount() == 2 && button == MouseButton.PRIMARY) {
-                        addFile();
-                    }
-                    removeFileContextMenu.setDisable(true);
-                } else {
-                    // 记录选中的文件条目索引
-                    selectedFileIndex = row.getIndex();
-                    removeFileContextMenu.setDisable(false);
+                boolean empty = row.isEmpty();
+                removeFileContextMenu.setDisable(empty);
+                selectedFileIndex = (empty) ? null : row.getIndex();
+                // 在空白区域双击左键添加文件
+                if (row.isEmpty() && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                    addFile();
                 }
             });
-
             return row;
         });
         // 绑定每一列的值
@@ -164,37 +146,19 @@ public class AppController implements Initializable {
      * 将每一列与{@code RuleWrapper}对应属性绑定
      * 添加鼠标事件
      */
-    private void initializeRuleTable() {
-        // 绑定规则表格鼠标事件
-        ruleTable.setOnMouseClicked(event -> {
-            if (ruleTable.getItems().isEmpty()) {
-                removeRuleContextMenu.setDisable(true);
-                // 在空白区域双击左键添加规则
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addRule();
-                }
-            }
-        });
-        // 绑定规则表格行鼠标事件
+    private void bindRuleTableColumn() {
+        // 绑定ruleTable行鼠标事件
         ruleTable.setRowFactory(table -> {
             TableRow<RuleWrapper> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                MouseButton button = event.getButton();
-
-                if (row.isEmpty()) {
-                    selectedFileIndex = null;
-                    // 在空白区域双击左键添加规则
-                    if (event.getClickCount() == 2 && button == MouseButton.PRIMARY) {
-                        addRule();
-                    }
-                    removeRuleContextMenu.setDisable(true);
-                } else {
-                    // 记录选中的规则条目索引
-                    selectedRuleIndex = row.getIndex();
-                    removeRuleContextMenu.setDisable(false);
+                boolean empty = row.isEmpty();
+                removeRuleContextMenu.setDisable(empty);
+                selectedFileIndex = (empty) ? null : row.getIndex();
+                // 在空白区域双击左键添加规则
+                if (empty && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                    addRule();
                 }
             });
-
             return row;
         });
         // 绑定每一列的值
@@ -207,7 +171,7 @@ public class AppController implements Initializable {
     /**
      * 将{@code TableView}的每一列与包装器中{@code key}对应的属性绑定在一起
      * @param column {@code TableView}中的列
-     * @param key 绑定的属性
+     * @param key    绑定的属性
      */
     private static void bindPropertyWithColumn(TableColumn<?, ?> column, String key) {
         column.setCellValueFactory(new PropertyValueFactory<>(key));
@@ -216,7 +180,7 @@ public class AppController implements Initializable {
     /**
      * 将{@code TableView}的序号列与每条记录的索引绑定在一起
      * @param column 序号列
-     * @param <T> {@code TableView}中每条记录显示的对象
+     * @param <T>    {@code TableView}中每条记录显示的对象
      */
     private static <T> void bindNoWithColumn(TableColumn<T, String> column) {
         column.setCellFactory((col) -> new TableCell<>() {
@@ -258,67 +222,176 @@ public class AppController implements Initializable {
     }
 
     /**
+     * 监听{@code fileTable}鼠标点击事件
+     * @param event 点击事件
+     */
+    @FXML private void mouseClickOnFileTable(MouseEvent event) {
+        if (fileTable.getItems().isEmpty()) {
+            // fileTable只有在不存在TableRow时才会设置ContextMenu的可用性
+            removeFileContextMenu.setDisable(true);
+            if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                addFile();
+            }
+        }
+    }
+
+    /**
+     * 监听{@code ruleTable}鼠标点击事件
+     * @param event 点击事件
+     */
+    @FXML private void mouseClickOnRuleTable(MouseEvent event) {
+        if (ruleTable.getItems().isEmpty()) {
+            removeRuleContextMenu.setDisable(true);
+            if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                addRule();
+            }
+        }
+    }
+
+    /**
+     * 监听鼠标在{@code fileTable}上拖动文件(夹)
+     * @param event 拖动事件
+     */
+    @FXML private void mouseDragFileTable(DragEvent event) {
+        if (event.getGestureSource() != fileTable && event.getDragboard().hasFiles()) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+        event.consume();
+    }
+
+    /**
+     * 监听鼠标将拖动文件(夹)放在{@code fileTable}上
+     * @param event 拖动事件
+     */
+    @FXML private void mouseDropOnFileTable(DragEvent event) {
+        Dragboard board = event.getDragboard();
+        boolean result = false;
+
+        if (board.hasFiles()) {
+            result = true;
+
+            var files = board.getFiles();
+            StringBuilder builder = new StringBuilder();
+            int errorCount = 0;
+            int filesCount = 0;
+
+            for (File file : files) {
+                if (!file.exists()) {
+                    continue;
+                }
+
+                if (file.isFile()) {
+                    ++filesCount;
+                    try {
+                        fileTable.getItems().add(new FileWrapper(file));
+                    } catch (InvalidFileModelException e) {
+                        if (++errorCount <= 5) {
+                            builder.append("\n").append(file.getName());
+                        }
+                    }
+                } else if (file.isDirectory()) {
+                    File[] childFiles = file.listFiles();
+                    if (childFiles == null) {
+                        continue;
+                    }
+
+                    for (File childFile : childFiles) {
+                        if (!childFile.isFile()) {
+                            continue;
+                        }
+
+                        ++filesCount;
+                        try {
+                            fileTable.getItems().add(new FileWrapper(childFile));
+                        } catch (InvalidFileModelException e) {
+                            if (++errorCount <= 5) {
+                                builder.append("\n").append(file.getName());
+                            }
+                        }
+                    }
+                }
+            }
+            // 错误信息弹窗
+            if (errorCount > 0) {
+                String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount)
+                        + builder.toString() + ((errorCount > 5) ? "\n..." : "");
+                Util.showAlert(Alert.AlertType.ERROR, "Error", error);
+            }
+        }
+        event.setDropCompleted(result);
+        event.consume();
+    }
+
+    /**
      * 添加文件到{@code fileTable}中
      */
-    public void addFile() {
+    @FXML private void addFile() {
         FileChooser chooser = new FileChooser();
 
         chooser.setTitle("添加文件");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File file = chooser.showOpenDialog(appRoot.getScene().getWindow());
 
-        if (file != null) {
-            try {
-                fileTable.getItems().add(new FileWrapper(file));
-            } catch (InvalidFileModelException e) {
-                Util.showAlert(Alert.AlertType.ERROR, "Error", "打开文件" + file.getName() + "出错");
-            }
+        if (file == null) {
+            return;
+        }
+
+        try {
+            fileTable.getItems().add(new FileWrapper(file));
+        } catch (InvalidFileModelException e) {
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "打开文件" + file.getName() + "出错");
         }
     }
 
     /**
      * 添加文件夹下的所有直接子文件到{@code fileTable}中
      */
-    public void addDirectory() {
+    @FXML private void addDirectory() {
         DirectoryChooser chooser = new DirectoryChooser();
+        StringBuilder builder = new StringBuilder();
         int errorCount = 0;
         int filesCount = 0;
-        StringBuilder builder = new StringBuilder();
 
         chooser.setTitle("添加文件夹");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File directory = chooser.showDialog(appRoot.getScene().getWindow());
 
-        if (directory != null) {
-            File[] files = directory.listFiles();
+        if (directory == null) {
+            return;
+        }
 
-            if (files != null) {
-                for (File file : files) {
-                    // 忽略子文件夹，只会添加文件
-                    if (file.isFile()) {
-                        ++filesCount;
-                        try {
-                            fileTable.getItems().add(new FileWrapper(file));
-                        } catch (InvalidFileModelException e) {
-                            ++errorCount;
-                            builder.append("\n").append(file.getName());
-                        }
-                    }
-                }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
 
-                // 错误信息弹窗
-                if (errorCount > 0) {
-                    String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount);
-                    Util.showAlert(Alert.AlertType.ERROR, "Error", error + builder.toString());
+        for (File file : files) {
+            // 忽略子文件夹，只会添加文件
+            if (!file.isFile()) {
+                continue;
+            }
+
+            ++filesCount;
+            try {
+                fileTable.getItems().add(new FileWrapper(file));
+            } catch (InvalidFileModelException e) {
+                if (++errorCount <= 5) {
+                    builder.append("\n").append(file.getName());
                 }
             }
+        }
+        // 错误信息弹窗
+        if (errorCount > 0) {
+            String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount)
+                    + builder.toString() + ((errorCount > 5) ? "\n..." : "");
+            Util.showAlert(Alert.AlertType.ERROR, "Error", error);
         }
     }
 
     /**
      * 打开规则编辑器，添加新规则
      */
-    public void addRule() {
+    @FXML private void addRule() {
         editRule(null);
     }
 
@@ -326,20 +399,13 @@ public class AppController implements Initializable {
      * 打开规则编辑器，编辑规则
      * @param rule 要编辑的规则
      */
-    public void editRule(RuleWrapper rule) {
+    @FXML private void editRule(RuleWrapper rule) {
         try {
             Stage ruleEditor = new Stage();
-            String resourcePath = "../layout/";
-
-            if (rule == null) {
-                // 创建新规则默认载入插入规则的布局文件
-                resourcePath += RuleEditorController.getScenes()[0];
-            } else {
-                // 编辑规则根据选中规则的类型载入布局文件
-                resourcePath += RuleEditorController.getScenes()[rule.getTypeIndex()];
-            }
+            // 创建新规则默认载入插入规则的布局文件，编辑规则根据选中规则的类型载入布局文件
+            String resourcePath = "../layout/" + RuleEditorController
+                    .getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
-
             ruleEditor.setScene(new Scene(loader.load(), 600, 385));
             RuleEditorController controller = loader.getController();
             // 向规则编辑器传入要编辑的规则
@@ -355,111 +421,122 @@ public class AppController implements Initializable {
         }
     }
 
+    /**
+     * 提供接口，使{@code RuleEditor}窗口向{@code App}发送一个{@code Rule}对象
+     * @param rule {@code RuleEditor}窗口创建的{@code Rule}对象
+     * @param edit 是否是编辑模式
+     */
+    void addOrEditRule(Rule rule, boolean edit) {
+        if (!edit) {
+            ruleTable.getItems().add(new RuleWrapper(rule));
+        } else {
+            ruleTable.getItems().set(selectedRuleIndex, new RuleWrapper(rule));
+            selectedRuleIndex = null;
+        }
+    }
+
     /* -- 清空/删除一个文件/规则处理函数 -- */
 
-    public void removeFile() {
+    @FXML private void removeFile() {
         if (selectedFileIndex != null) {
             fileTable.getItems().remove(selectedFileIndex.intValue());
             selectedFileIndex = null;
         }
     }
 
-    public void clearFiles() {
+    @FXML private void clearFiles() {
         fileTable.getItems().clear();
         selectedFileIndex = null;
     }
 
-    public void removeRule() {
+    @FXML private void removeRule() {
         if (selectedRuleIndex != null) {
             ruleTable.getItems().remove(selectedRuleIndex.intValue());
             selectedRuleIndex = null;
         }
     }
 
-    public void clearRules() {
+    @FXML private void clearRules() {
         ruleTable.getItems().clear();
         selectedRuleIndex = null;
     }
 
     /* -- 文件和规则菜单中(取消)选中全部处理函数 -- */
 
-    public void selectAllFiles() {
+    @FXML private void selectAllFiles() {
         fileTable.getItems().forEach(FileWrapper::select);
     }
 
-    public void unselectAllFiles() {
+    @FXML private void unselectAllFiles() {
         fileTable.getItems().forEach(FileWrapper::unselect);
     }
 
-    public void selectAllRules() {
+    @FXML private void selectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::select);
     }
 
-    public void unselectAllRules() {
+    @FXML private void unselectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::unselect);
     }
 
     /* -- 分栏子菜单中添加/去除分栏处理函数 -- */
 
-    public void alterFileNameColumn() {
+    @FXML private void alterFileNameColumn() {
         alterFileColumn(fileNameColumnState, "文件名", "fileName");
     }
 
-    public void alterPreviewColumn() {
+    @FXML private void alterPreviewColumn() {
         alterFileColumn(previewColumnState, "新名称", "preview");
     }
 
-    public void alterErrorColumn() {
+    @FXML private void alterErrorColumn() {
         alterFileColumn(errorColumnState, "错误信息", "error");
     }
 
-    public void alterExtensionColumn() {
+    @FXML private void alterExtensionColumn() {
         alterFileColumn(extensionColumnState, "扩展名", "extension");
     }
 
-    public void alterParentColumn() {
+    @FXML private void alterParentColumn() {
         alterFileColumn(parentColumnState, "父目录", "parent");
     }
 
-    public void alterSizeColumn() {
+    @FXML private void alterSizeColumn() {
         alterFileColumn(sizeColumnState, "大小(字节)", "sizeInBytes");
     }
 
-    public void alterSizeKBColumn() {
+    @FXML private void alterSizeKBColumn() {
         alterFileColumn(sizeKBColumnState, "大小(KB)", "sizeInKB");
     }
 
-    public void alterSizeMBColumn() {
+    @FXML private void alterSizeMBColumn() {
         alterFileColumn(sizeMBColumnState, "大小(MB)", "sizeInMB");
     }
 
-    public void alterCreatedTimeColumn() {
+    @FXML private void alterCreatedTimeColumn() {
         alterFileColumn(createdTimeColumnState, "创建时间", "createdTime");
     }
 
-    public void alterModifiedTime() {
+    @FXML private void alterModifiedTime() {
         alterFileColumn(modifiedTimeColumnState, "修改时间", "modifiedTime");
     }
 
     /**
      * 根据分栏对应的{@code CheckMenuItem}是否被选择来添加或者去除分栏
-     * @param menu 分栏对应的菜单选项
+     * @param menu       分栏对应的菜单选项
      * @param columnName 分栏名称
-     * @param key 分栏对应{@code FileWrapper}中的键
+     * @param key        分栏对应{@code FileWrapper}中的键
      */
     private void alterFileColumn(CheckMenuItem menu, String columnName, String key) {
         var columns = fileTable.getColumns();
 
         if (!menu.isSelected()) {
-            int index;
-
-            for (index = 0; index < columns.size(); ++index) {
+            for (int index = 0; index < columns.size(); ++index) {
                 if (columns.get(index).textProperty().getValue().equals(columnName)) {
+                    columns.remove(index);
                     break;
                 }
             }
-
-            columns.remove(index);
         } else {
             TableColumn<FileWrapper, String> newColumn = new TableColumn<>(columnName);
             bindPropertyWithColumn(newColumn, key);
@@ -470,7 +547,7 @@ public class AppController implements Initializable {
     /**
      * 打开配置编辑器
      */
-    public void showConfigEditor() {
+    @FXML private void showConfigEditor() {
         try {
             Stage configEditor = new Stage();
             Parent root = FXMLLoader.load(getClass().getResource("../layout/ConfigEditor.fxml"));
@@ -489,7 +566,7 @@ public class AppController implements Initializable {
     /**
      * 初始化配置选项
      */
-    public void resetConfig() {
+    @FXML private void resetConfig() {
         Config.getConfig().initialize();
     }
 }

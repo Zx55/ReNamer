@@ -28,5 +28,5 @@
     <Separator layoutX="36.0" layoutY="480.0" prefHeight="3.0" prefWidth="332.0" />
     <CheckBox fx:id="saveRulesOnExitLoadOnStartup" layoutX="48.0" layoutY="500.0" mnemonicParsing="false" text="退出时保存规则集，下次启动时加载" />
     <Button layoutX="70.0" layoutY="545.0" mnemonicParsing="false" onAction="#saveConfig" prefHeight="30.0" prefWidth="110.0" text="保存" />
-    <Button layoutX="220.0" layoutY="545.0" mnemonicParsing="false" onAction="#exitStage" prefHeight="30.0" prefWidth="110.0" text="取消" />
+    <Button layoutX="220.0" layoutY="545.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0" prefWidth="110.0" text="取消" />
 </AnchorPane>

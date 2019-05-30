@@ -9,6 +9,12 @@
 
 package renamer.app.controller;
 
+import renamer.model.rule.*;
+import renamer.model.rule.flag.*;
+import renamer.model.rule.generic.*;
+import renamer.model.rule.position.*;
+import renamer.model.wrapper.RuleWrapper;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,8 +24,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import renamer.model.rule.Rule;
-import renamer.model.wrapper.RuleWrapper;
+import renamer.util.Util;
 
 public class RuleEditorController implements Initializable {
     /* -- FXML组件 -- */
@@ -187,6 +192,60 @@ public class RuleEditorController implements Initializable {
 
     }
 
+    /**
+     * 确定创建或者编辑一个插入规则
+     */
+    @FXML private void saveInsertRule() {
+        try {
+            String pattern = insertRulePattern.getText();
+            InsertFlag flag;
+            int index = 0;
+            Direction direction = Direction.DIRECTION_LEFT;
+
+            switch (getToggleText(insertRulePosition.getSelectedToggle())) {
+                case "前缀":
+                    flag = InsertFlag.INSERT_PREFIX;
+                    break;
+                case "后缀":
+                    flag = InsertFlag.INSERT_SUFFIX;
+                    break;
+                default:
+                    flag = InsertFlag.INSERT_INDEX;
+                    index = Integer.parseInt(insertRuleIndex.getText());
+                    direction = insertRuleDirection.isSelected() ? Direction.DIRECTION_RIGHT : Direction.DIRECTION_LEFT;
+            }
+            Position position = new InsertPosition(flag, index, direction);
+
+            addOrEditRule(new InsertRule(pattern, position, insertRuleIgnore.isSelected()));
+            exitEditor();
+        } catch (NumberFormatException e) {
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "非法位置索引");
+        }
+    }
+
+    /**
+     * 将创建或者编辑的规则通过提供的接口发送给{@code AppController}
+     * @param rule 创建或者编辑的规则
+     */
+    private void addOrEditRule(Rule rule) {
+        AppController controller = new FXMLLoader(getClass().getResource("../layout/App.fxml"))
+                .getController();
+        // FIXME: controller == null
+        controller.addOrEditRule(rule, this.rule != null);
+    }
+
+    /**
+     * 退出规则编辑器
+     */
+    public void exitEditor() {
+        Stage ruleEditor = (Stage) ruleEditorRoot.getScene().getWindow();
+        ruleEditor.close();
+    }
+
+    /**
+     * 提供接口来访问{@code scenes}数组
+     * @return {@code scenes}数组
+     */
     static String[] getScenes() {
         return scenes;
     }

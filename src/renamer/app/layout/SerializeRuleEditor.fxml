@@ -84,7 +84,7 @@
             <Font size="13.0" />
         </font>
     </Button>
-    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="取消">
+    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0" prefWidth="150.0" text="取消">
         <font>
             <Font size="13.0" />
         </font>

@@ -53,7 +53,7 @@
          <MenuItem mnemonicParsing="false" text="Unspecified Action" />
         </Menu>
     </MenuBar>
-    <TableView fx:id="ruleTable" layoutY="75.0" prefHeight="270.0" prefWidth="500.0">
+    <TableView fx:id="ruleTable" layoutY="75.0" onMouseClicked="#mouseClickOnRuleTable" prefHeight="270.0" prefWidth="500.0">
         <placeholder>
             <Label text="双击添加规则" />
         </placeholder>
@@ -76,7 +76,7 @@
             </ContextMenu>
         </contextMenu>
     </TableView>
-    <TableView fx:id="fileTable" layoutY="380.0" prefHeight="300.0" prefWidth="500.0">
+    <TableView fx:id="fileTable" layoutY="380.0" onDragDropped="#mouseDropOnFileTable" onDragOver="#mouseDragFileTable" onMouseClicked="#mouseClickOnFileTable" prefHeight="300.0" prefWidth="500.0">
         <placeholder>
             <Label text="双击添加文件" />
         </placeholder>

@@ -10,18 +10,17 @@
 package renamer.app.controller;
 
 import renamer.config.Config;
+import renamer.util.Util;
 
 import java.net.URL;
 import java.text.*;
 import java.util.*;
 
 import javafx.fxml.*;
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import renamer.util.Util;
 
 /**
  * 设置编辑器窗口布局{@code ../layout/ConfigEditor.fxml}对应的控制对象
@@ -76,18 +75,14 @@ public class ConfigEditorController implements Initializable {
     /**
      * 根据{@code highlightChangedFiles}选项设置{@code highlightColor}的可用性
      */
-    public void setColorPickerDisable() {
-        if (highlightChangedFiles.isSelected()) {
-            highlightColor.setDisable(false);
-        } else {
-            highlightColor.setDisable(true);
-        }
+    @FXML private void setColorPickerDisable() {
+        highlightColor.setDisable(!highlightChangedFiles.isSelected());
     }
 
     /**
      * 根据{@code dateFormat}中输入的日期格式设置{@code datePreviewLabel}中的预览
      */
-    public void setDatePreview() {
+    @FXML private void setDatePreview() {
         try {
             setDatePreviewLabel(dateFormat.getText());
         } catch (IllegalArgumentException e) {
@@ -97,9 +92,8 @@ public class ConfigEditorController implements Initializable {
 
     /**
      * 点击保存按钮将配置选项写入Config对象并退出{@code ConfigEditor}
-     * @param event 点击事件
      */
-    public void saveConfig(ActionEvent event) {
+    @FXML private void saveConfig() {
         try {
             Config config = Config.getConfig();
 
@@ -124,8 +118,7 @@ public class ConfigEditorController implements Initializable {
 
             config.set("saveRulesOnExitLoadOnStartup", String.valueOf(saveRulesOnExitLoadOnStartup.isSelected()));
 
-            Stage configEditor = (Stage) configEditorRoot.getScene().getWindow();
-            configEditor.close();
+            exitEditor();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,9 +126,8 @@ public class ConfigEditorController implements Initializable {
 
     /**
      * 点击取消按钮不保存配置选项退出{@code ConfigEditor}
-     * @param event 点击事件
      */
-    public void exitStage(ActionEvent event) {
+    @FXML private void exitEditor() {
         Stage configEditor = (Stage) configEditorRoot.getScene().getWindow();
         configEditor.close();
     }
