@@ -65,9 +65,9 @@ public class ReplaceRule extends RegExRule {
         return super.getDescription() + ((wholeWordOnly) ? "(全字匹配)" : "");
     }
 
-    /* -- 暴露给子类的属性和方法 -- */
+    /* -- 访问属性 -- */
 
-    boolean isWholeWordOnly() {
+    public boolean isWholeWordOnly() {
         return wholeWordOnly;
     }
 

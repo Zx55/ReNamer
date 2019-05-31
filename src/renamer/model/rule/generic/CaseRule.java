@@ -138,4 +138,18 @@ public final class CaseRule implements Rule {
 
         return String.join(delimiter, splits);
     }
+
+    /* -- 访问属性 -- */
+
+    public CaseFlag getFlag() {
+        return flag;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
+    }
+
+    public boolean isIgnoreExtension() {
+        return ignoreExtension;
+    }
 }

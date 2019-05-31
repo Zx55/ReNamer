@@ -134,9 +134,15 @@ public final class AppController implements Initializable {
                 boolean empty = row.isEmpty();
                 removeRuleContextMenu.setDisable(empty);
                 selectedRuleIndex = (empty) ? null : row.getIndex();
-                // 在空白区域双击左键添加规则
-                if (empty && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addRule();
+
+                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                    if (empty) {
+                        // 在空白区域双击左键添加规则
+                        addRule();
+                    } else {
+                        // 在已有规则上双击进行编辑
+                        editRule(row.getItem());
+                    }
                 }
             });
             row.setOnDragDetected(event -> dragDetectedOnTable(row, event));

@@ -81,4 +81,18 @@ public final class InsertPosition implements Position {
 
         return description + ((direction == Direction.DIRECTION_RIGHT) ? "(从右到左)" : "");
     }
+
+    /* -- 访问属性 -- */
+
+    public InsertFlag getFlag() {
+        return flag;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
 }

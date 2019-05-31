@@ -99,21 +99,25 @@ public class RegExRule implements Rule {
                 ((isIgnoreExtension()) ? "(忽略扩展名)" : "");
     }
 
-    /* -- 暴露给子类的属性和方法 -- */
+    /* -- 访问属性 -- */
 
-    ReplaceFlag getFlag() {
+    public ReplaceFlag getFlag() {
         return flag;
     }
 
-    String getTargetPattern() {
+    public String getTargetPattern() {
         return targetPattern;
     }
 
-    boolean isCaseSensitive() {
+    public String getReplacePattern() {
+        return replacePattern;
+    }
+
+    public boolean isCaseSensitive() {
         return caseSensitive;
     }
 
-    boolean isIgnoreExtension() {
+    public boolean isIgnoreExtension() {
         return ignoreExtension;
     }
 
@@ -177,4 +181,5 @@ public class RegExRule implements Rule {
 
         return buffer.toString();
     }
+
 }

@@ -85,4 +85,26 @@ public final class PaddingRule implements Rule {
                 + ((flag == PaddingFlag.PADDING_FILL) ? (paddingLength + "次") : ("以保持长度" + paddingLength))
                 + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }
+
+    /* -- 访问属性 -- */
+
+    public PaddingFlag getFlag() {
+        return flag;
+    }
+
+    public String getCharacter() {
+        return paddingCharacter;
+    }
+
+    public int getLength() {
+        return paddingLength;
+    }
+
+    public Direction getPosition() {
+        return position;
+    }
+
+    public boolean isIgnoreExtension() {
+        return ignoreExtension;
+    }
 }

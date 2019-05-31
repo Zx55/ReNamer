@@ -117,4 +117,34 @@ public final class SerializeRule implements Rule {
                 ((paddingZeroLength > 1) ? "、补足长度为" + paddingZeroLength : "") + "进行序列化" +
                 position.description() + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }
+
+    /* -- 访问属性 -- */
+
+    public int getBeg() {
+        return increment.begIndex;
+    }
+
+    public int getStep() {
+        return increment.step;
+    }
+
+    public int getRepeat() {
+        return increment.repeat;
+    }
+
+    public int getReset() {
+        return increment.reset;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public int getPadding() {
+        return paddingZeroLength;
+    }
+
+    public boolean isIgnoreExtension() {
+        return ignoreExtension;
+    }
 }

@@ -61,4 +61,14 @@ public final class ExtensionRule implements Rule {
     public String getDescription() {
         return ((appendToEnd) ? "添加新扩展名" : "更改扩展名为") + newExtension;
     }
+
+    /* -- 访问方法 -- */
+
+    public String getNewExtension() {
+        return newExtension;
+    }
+
+    public boolean isAppendToEnd() {
+        return appendToEnd;
+    }
 }

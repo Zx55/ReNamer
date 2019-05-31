@@ -215,18 +215,186 @@ public final class RuleEditorController implements Initializable {
         link = this;
 
         if (rule != null) {
-            this.srcRule = rule.getRule();
+            srcRule = rule.getRule();
             if (ruleTypeChoice.getSelectionModel().getSelectedIndex() != rule.getTypeIndex()) {
                 switchRuleType(rule.getTypeIndex());
             }
             setRuleConfig();
         } else {
-            this.srcRule = null;
+            srcRule = null;
         }
     }
 
+    /**
+     * 根据编辑的规则设置配置面板
+     */
     private void setRuleConfig() {
+        switch (srcRule.getTypeIndex()) {
+            case 0:
+                InsertRule insertRule = (InsertRule) srcRule;
+                InsertPosition insertPosition = (InsertPosition) insertRule.getPosition();
 
+                insertRulePattern.setText(insertRule.getPattern());
+                insertRuleIgnore.setSelected(insertRule.isIgnoreExtension());
+                switch (insertPosition.getFlag()) {
+                    case INSERT_SUFFIX:
+                        selectToggle(insertRulePosition, "后缀");
+                        break;
+                    case INSERT_INDEX:
+                        selectToggle(insertRulePosition, "位置");
+                        insertRuleIndex.setText(String.valueOf(insertPosition.getIndex()));
+                        insertRuleDirection.setSelected(insertPosition.getDirection() == Direction.DIRECTION_RIGHT);
+                        break;
+                }
+                break;
+            case 1:
+                DeleteRule deleteRule = (DeleteRule) srcRule;
+                DeletePosition deletePosition = (DeletePosition) deleteRule.getPosition();
+                DeleteFlag deleteFlag = deletePosition.getFlag();
+
+                deleteRuleIgnore.setSelected(deleteRule.isIgnoreExtension());
+                if (deleteFlag == DeleteFlag.DELETE_ALL) {
+                    deleteRuleAll.setSelected(true);
+                } else {
+                    deleteRuleBeg.setText(String.valueOf(deletePosition.getBeg()));
+                    deleteRuleDirection.setSelected(deletePosition.getDirection() == Direction.DIRECTION_RIGHT);
+                    switch (deleteFlag) {
+                        case DELETE_BEG_COUNT:
+                            deleteRuleCount.setText(String.valueOf(deletePosition.getCount()));
+                            break;
+                        case DELETE_BEG_END:
+                            selectToggle(deleteRulePosition, "位置");
+                            deleteRuleEnd.setText(String.valueOf(deletePosition.getEnd()));
+                            break;
+                        case DELETE_BEG_TO_END:
+                            selectToggle(deleteRulePosition, "末尾");
+                            break;
+                    }
+                }
+                break;
+            case 2:
+                PaddingRule paddingRule = (PaddingRule) srcRule;
+
+                paddingRuleCharacter.setText(paddingRule.getCharacter());
+                paddingRuleLength.setText(String.valueOf(paddingRule.getLength()));
+                if (paddingRule.getFlag() == PaddingFlag.PADDING_FILL_TO_LENGTH) {
+                    selectToggle(paddingRuleMode, "补足使满足长度");
+                }
+                if (paddingRule.getPosition() == Direction.DIRECTION_RIGHT) {
+                    selectToggle(paddingRulePosition, "右侧");
+                }
+                paddingRuleIgnore.setSelected(paddingRule.isIgnoreExtension());
+                break;
+            case 3:
+                SerializeRule serializeRule = (SerializeRule) srcRule;
+                InsertPosition serializePosition = (InsertPosition) serializeRule.getPosition();
+
+                serializeRuleBeg.setText(String.valueOf(serializeRule.getBeg()));
+                serializeRuleStep.setText(String.valueOf(serializeRule.getStep()));
+                serializeRuleRepeat.setText(String.valueOf(serializeRule.getRepeat()));
+                serializeRuleIgnore.setSelected(serializeRule.isIgnoreExtension());
+                if (serializeRule.getReset() > 0) {
+                    serializeRuleReset.setSelected(true);
+                    serializeRuleResetValue.setText(String.valueOf(serializeRule.getReset()));
+                }
+                if (serializeRule.getPadding() > 0) {
+                    serializeRulePadding.setSelected(true);
+                    serializeRuleLength.setText(String.valueOf(serializeRule.getPadding()));
+                }
+                switch (serializePosition.getFlag()) {
+                    case INSERT_SUFFIX:
+                        selectToggle(serializeRulePosition, "后缀");
+                        break;
+                    case INSERT_INDEX:
+                        selectToggle(serializeRulePosition, "位置");
+                        serializeRuleIndex.setText(String.valueOf(serializePosition.getIndex()));
+                        serializeRuleDirection.setSelected(serializePosition.getDirection() == Direction.DIRECTION_RIGHT);
+                }
+                break;
+            case 4:
+                RemoveRule removeRule = (RemoveRule) srcRule;
+
+                removeRulePattern.setText(removeRule.getTargetPattern());
+                removeRuleIgnore.setSelected(removeRule.isIgnoreExtension());
+                removeRuleCase.setSelected(removeRule.isCaseSensitive());
+                removeRuleWhole.setSelected(removeRule.isWholeWordOnly());
+                switch (removeRule.getFlag()) {
+                    case REPLACE_FIRST:
+                        selectToggle(removeRulePosition, "第一个");
+                        break;
+                    case REPLACE_LAST:
+                        selectToggle(removeRulePosition, "最后一个");
+                        break;
+                }
+                break;
+            case 5:
+                ReplaceRule replaceRule = (ReplaceRule) srcRule;
+
+                replaceRuleFind.setText(replaceRule.getTargetPattern());
+                replaceRuleReplace.setText(replaceRule.getReplacePattern());
+                replaceRuleIgnore.setSelected(replaceRule.isIgnoreExtension());
+                replaceRuleCase.setSelected(replaceRule.isCaseSensitive());
+                replaceRuleWhole.setSelected(replaceRule.isWholeWordOnly());
+                switch (replaceRule.getFlag()) {
+                    case REPLACE_LAST:
+                        selectToggle(replaceRulePosition, "最后一个");
+                        break;
+                    case REPLACE_ALL:
+                        selectToggle(replaceRulePosition, "全部");
+                        break;
+                }
+                break;
+            case 6:
+                RegExRule regExRule = (RegExRule) srcRule;
+
+                reRuleFind.setText(regExRule.getTargetPattern());
+                reRuleReplace.setText(regExRule.getReplacePattern());
+                reRuleIgnore.setSelected(regExRule.isIgnoreExtension());
+                reRuleCase.setSelected(regExRule.isCaseSensitive());
+                switch (regExRule.getFlag()) {
+                    case REPLACE_FIRST:
+                        selectToggle(reRulePosition, "第一个");
+                        break;
+                    case REPLACE_LAST:
+                        selectToggle(reRulePosition, "最后一个");
+                        break;
+                }
+                break;
+            case 7:
+                ExtensionRule extensionRule = (ExtensionRule) srcRule;
+
+                exRuleEx.setText(extensionRule.getNewExtension());
+                exRuleAppend.setSelected(extensionRule.isAppendToEnd());
+                break;
+            case 8:
+                CaseRule caseRule = (CaseRule) srcRule;
+
+                switch (caseRule.getFlag()) {
+                    case CASE_CAPITALIZE_WITH_DELIMITER:
+                        caseRuleDelimiter.setText(caseRule.getDelimiter());
+                        break;
+                    case CASE_CAPITALIZE_FIRST:
+                        selectToggle(caseRuleMode, "首字母大写");
+                        break;
+                    case CASE_ALL_UPPER:
+                        selectToggle(caseRuleMode, "全部大写");
+                        break;
+                    case CASE_ALL_LOW:
+                        selectToggle(caseRuleMode, "全部小写");
+                        break;
+                    case CASE_INVERT:
+                        selectToggle(caseRuleMode, "反转大小写");
+                        break;
+                }
+                caseRuleIgnore.setSelected(caseRule.isIgnoreExtension());
+                break;
+        }
+    }
+
+    private void selectToggle(ToggleGroup group, String key) {
+        for (var toggle : group.getToggles()) {
+            toggle.setSelected(((RadioButton) toggle).getText().equals(key));
+        }
     }
 
     /* -- 创建或者编辑一条规则并把新规则存储在retRule对象中 -- */

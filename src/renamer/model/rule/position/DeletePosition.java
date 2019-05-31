@@ -96,4 +96,26 @@ public final class DeletePosition implements Position {
 
         return description + ((direction == Direction.DIRECTION_RIGHT) ? "(从右到左)" : "");
     }
+
+    /* -- 访问属性 -- */
+
+    public DeleteFlag getFlag() {
+        return flag;
+    }
+
+    public int getBeg() {
+        return begIndex;
+    }
+
+    public int getCount() {
+        return endCount;
+    }
+
+    public int getEnd() {
+        return endIndex;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
 }

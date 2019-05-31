@@ -72,4 +72,18 @@ public final class InsertRule implements Rule {
     public String getDescription() {
         return "插入\"" + pattern + "\"" + position.description() + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }
+
+    /* -- 访问属性 -- */
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public boolean isIgnoreExtension() {
+        return ignoreExtension;
+    }
 }

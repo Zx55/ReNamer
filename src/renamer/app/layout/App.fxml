@@ -68,12 +68,13 @@
         </Menu>
     </MenuBar>
     <Button id="toolBarButton" layoutX="5.0" layoutY="35.0" mnemonicParsing="false" onAction="#addFile"
-            prefHeight="40.0" prefWidth="80.0" text="添加文件"/>
-    <Button id="toolBarButton" layoutX="95.0" layoutY="35.0" mnemonicParsing="false" onAction="#addDirectory"
-            prefHeight="40.0" prefWidth="80.0" text="添加文件夹"/>
-    <Button id="toolBarButton" layoutX="185.0" layoutY="35.0" mnemonicParsing="false" onAction="#addRule"
-            prefHeight="40.0" prefWidth="80.0" text="添加规则"/>
-    <Button id="toolBarButton" layoutX="415.0" layoutY="35.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="80.0"
+            prefHeight="40.0" prefWidth="100.0" text="添加文件"/>
+    <Button id="toolBarButton" layoutX="110.0" layoutY="35.0" mnemonicParsing="false" onAction="#addDirectory"
+            prefHeight="40.0" prefWidth="100.0" text="添加文件夹"/>
+    <Button id="toolBarButton" layoutX="215.0" layoutY="35.0" mnemonicParsing="false" onAction="#addRule"
+            prefHeight="40.0" prefWidth="100.0" text="添加规则"/>
+    <Button id="toolBarButton" layoutX="395.0" layoutY="35.0" mnemonicParsing="false" prefHeight="40.0"
+            prefWidth="100.0"
             text="重命名"/>
     <TableView fx:id="ruleTable" layoutY="80.0" onMouseClicked="#mouseClickedOnRuleTable" prefHeight="270.0"
                prefWidth="500.0">
