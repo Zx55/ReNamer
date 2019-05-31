@@ -30,7 +30,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public class CaseRule implements Rule {
+public final class CaseRule implements Rule {
     // 大小写模式
     private CaseFlag flag;
     // 分隔符，仅在CASE_CAPITALIZE_WITH_DELIMITER下有效

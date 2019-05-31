@@ -16,7 +16,7 @@ import renamer.model.rule.flag.DeleteFlag;
  * 删除规则影响的位置
  * 删除[beg, end)位置的字符
  */
-public class DeletePosition implements Position {
+public final class DeletePosition implements Position {
     // 要修改的文件名长度
     private int length;
     // 删除模式

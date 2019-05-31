@@ -32,7 +32,7 @@ import renamer.model.rule.flag.ReplaceFlag;
  *     }
  * }</pre>
  */
-public class RemoveRule extends ReplaceRule {
+public final class RemoveRule extends ReplaceRule {
     /* -- RemoveRule的构造方法 -- */
 
     public RemoveRule(String pattern, ReplaceFlag flag, boolean caseSensitive,

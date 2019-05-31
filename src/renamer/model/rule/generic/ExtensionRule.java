@@ -28,7 +28,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public class ExtensionRule implements Rule {
+public final class ExtensionRule implements Rule {
     // 新扩展名
     private String newExtension;
     // 是否添加到文件名最后

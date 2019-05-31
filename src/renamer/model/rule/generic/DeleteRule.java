@@ -30,7 +30,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public class DeleteRule implements Rule {
+public final class DeleteRule implements Rule {
     // 删除字符串的位置
     private Position position;
     // 忽略扩展名标志位

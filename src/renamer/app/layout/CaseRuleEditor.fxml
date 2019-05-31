@@ -11,53 +11,57 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ruleEditorRoot" prefHeight="385.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.RuleEditorController">
+<AnchorPane fx:id="ruleEditorRoot" prefHeight="385.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.RuleEditorController">
     <ChoiceBox fx:id="ruleTypeChoice" layoutX="50.0" layoutY="40.0" prefHeight="30.0" prefWidth="160.0" value="大小写规则">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="插入规则" />
-                <String fx:value="删除规则" />
-                <String fx:value="填充规则" />
-                <String fx:value="序列化规则" />
-                <String fx:value="移除规则" />
-                <String fx:value="替换规则" />
-                <String fx:value="正则表达式规则" />
-                <String fx:value="扩展名规则" />
-                <String fx:value="大小写规则" />
+                <String fx:value="插入规则"/>
+                <String fx:value="删除规则"/>
+                <String fx:value="填充规则"/>
+                <String fx:value="序列化规则"/>
+                <String fx:value="移除规则"/>
+                <String fx:value="替换规则"/>
+                <String fx:value="正则表达式规则"/>
+                <String fx:value="扩展名规则"/>
+                <String fx:value="大小写规则"/>
             </FXCollections>
         </items>
     </ChoiceBox>
     <RadioButton layoutX="60.0" layoutY="100.0" mnemonicParsing="false" selected="true" text="分隔符隔开的每个单词首字母大写">
         <toggleGroup>
-            <ToggleGroup fx:id="caseRuleMode" />
+            <ToggleGroup fx:id="caseRuleMode"/>
         </toggleGroup>
     </RadioButton>
-    <TextField fx:id="caseRuleDelimiter" layoutX="317.0" layoutY="94.0" prefHeight="30.0" prefWidth="76.0" />
-    <RadioButton layoutX="60.0" layoutY="142.0" mnemonicParsing="false" text="首字母大写" toggleGroup="$caseRuleMode" />
-    <RadioButton layoutX="60.0" layoutY="184.0" mnemonicParsing="false" text="全部大写" toggleGroup="$caseRuleMode" />
+    <TextField fx:id="caseRuleDelimiter" layoutX="317.0" layoutY="94.0" prefHeight="30.0" prefWidth="76.0"/>
+    <RadioButton layoutX="60.0" layoutY="142.0" mnemonicParsing="false" text="首字母大写" toggleGroup="$caseRuleMode"/>
+    <RadioButton layoutX="60.0" layoutY="184.0" mnemonicParsing="false" text="全部大写" toggleGroup="$caseRuleMode"/>
     <RadioButton layoutX="300.0" layoutY="184.0" mnemonicParsing="false" text="全部小写" toggleGroup="$caseRuleMode">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </RadioButton>
     <RadioButton layoutX="60.0" layoutY="226.0" mnemonicParsing="false" text="反转大小写" toggleGroup="$caseRuleMode">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </RadioButton>
-    <CheckBox fx:id="caseRuleIgnore" layoutX="60.0" layoutY="270.0" mnemonicParsing="false" selected="true" text="忽略扩展名">
+    <CheckBox fx:id="caseRuleIgnore" layoutX="60.0" layoutY="270.0" mnemonicParsing="false" selected="true"
+              text="忽略扩展名">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </CheckBox>
-    <Button layoutX="120.0" layoutY="315.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="确定">
+    <Button layoutX="120.0" layoutY="315.0" mnemonicParsing="false" onAction="#saveCaseRule" prefHeight="30.0"
+            prefWidth="150.0" text="确定">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </Button>
-    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0" prefWidth="150.0" text="取消">
+    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0"
+            prefWidth="150.0" text="取消">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </Button>
 </AnchorPane>

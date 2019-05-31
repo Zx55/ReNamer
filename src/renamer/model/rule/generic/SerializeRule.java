@@ -31,7 +31,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public class SerializeRule implements Rule {
+public final class SerializeRule implements Rule {
     /**
      * 序列化增量
      */

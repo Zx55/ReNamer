@@ -17,7 +17,7 @@ import renamer.util.Util;
  * 单例模式，使用{@code Config.getConfig()}获取
  * 启动程序时从配置文件读取，关闭程序时写回配置文件
  */
-public class Config {
+public final class Config {
     // 单例模式中的唯一实例对象
     private static Config config = new Config();
     // 设定文件的位置

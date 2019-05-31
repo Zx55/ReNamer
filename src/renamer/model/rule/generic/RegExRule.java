@@ -9,6 +9,7 @@
 
 package renamer.model.rule.generic;
 
+import javafx.scene.control.Alert;
 import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
 import renamer.model.rule.flag.ReplaceFlag;
@@ -76,7 +77,7 @@ public class RegExRule implements Rule {
 
             return fileName + ((ignoreExtension) ? file.getExtension() : "");
         } catch (IndexOutOfBoundsException e) {
-            // TODO: 提示正则表达式不合法
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "反向引用超出范围");
             return file.getFileName();
         }
     }
@@ -146,6 +147,9 @@ public class RegExRule implements Rule {
      * @return {@code Pattern}对象
      */
     protected Pattern getPatternByFlag() {
+        // 将'\'替换为'\\'
+        targetPattern = targetPattern.replaceAll("\\\\", "\\\\\\\\");
+
         if (caseSensitive) {
             return Pattern.compile(targetPattern);
         } else {

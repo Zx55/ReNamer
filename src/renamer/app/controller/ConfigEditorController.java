@@ -25,7 +25,7 @@ import javafx.stage.Stage;
 /**
  * 设置编辑器窗口布局{@code ../layout/ConfigEditor.fxml}对应的控制对象
  */
-public class ConfigEditorController implements Initializable {
+public final class ConfigEditorController implements Initializable {
     /* -- FXML组件 -- */
     @FXML private AnchorPane configEditorRoot;
     @FXML private CheckBox autoPreviewWhenRulesChange;

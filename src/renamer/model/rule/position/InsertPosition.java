@@ -20,7 +20,7 @@ import renamer.model.rule.flag.InsertFlag;
  *  test.txt忽略扩展名从左到右在位置2插入abc => tabcest.txt
  *  test.txt不忽略扩展名从右到做在位置2插入abc => test.txabct
  */
-public class InsertPosition implements Position {
+public final class InsertPosition implements Position {
     // 要修改的文件名长度
     private int length;
     // 插入模式

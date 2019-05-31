@@ -14,7 +14,7 @@ package renamer.config;
  * 若配置文件中出现了不合法的键，抛出该异常
  * 若键对应的值不合法抛出该异常
  */
-public class ConfigParseException extends Exception {
+public final class ConfigParseException extends Exception {
     ConfigParseException() {
         super();
     }

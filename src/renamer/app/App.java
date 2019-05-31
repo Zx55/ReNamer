@@ -19,7 +19,7 @@ import renamer.config.Config;
 /**
  * 程序主体窗口
  */
-public class App extends Application {
+public final class App extends Application {
     public static void main(String[] args) {
         launch(args);
     }

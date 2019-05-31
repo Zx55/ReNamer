@@ -32,7 +32,7 @@ import renamer.util.Util;
  * }</pre>
  *
  */
-public class InsertRule implements Rule {
+public final class InsertRule implements Rule {
     // 插入字符串模式
     private String pattern;
     // 插入字符串位置

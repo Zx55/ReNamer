@@ -20,7 +20,7 @@ import java.util.Calendar;
 /**
  * 通用工具方法
  */
-public class Util {
+public final class Util {
     /**
      * 从配置文件中读取数据
      * @param path 配置文件路径

@@ -11,6 +11,7 @@ package renamer.model.rule.generic;
 
 import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
+import renamer.model.rule.flag.PaddingFlag;
 import renamer.model.rule.position.Direction;
 import renamer.util.Util;
 
@@ -22,7 +23,7 @@ import renamer.util.Util;
  * <pre>{@code
  *     try {
  *         var file = new FileModel("C:\\test.txt");
- *         Rule rule = new PaddingRule("0", 20, Direction.DIRECTION_LEFT, false);
+ *         Rule rule = new PaddingRule(PaddingFlag.PADDING_FILL, "0", 20, Direction.DIRECTION_LEFT, false);
  *
  *         System.out.println(rule.exec(file, 0));
  *     } catch (Exception e) {
@@ -30,10 +31,11 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-// FIXME: 添加不同填充模式，直接填充和补足长度
-public class PaddingRule implements Rule {
+public final class PaddingRule implements Rule {
     // 填充字符
     private String paddingCharacter;
+    // 填充模式
+    private PaddingFlag flag;
     // 触发填充规则的长度
     private int paddingLength;
     // 填充位置
@@ -43,7 +45,9 @@ public class PaddingRule implements Rule {
 
     /* -- PaddingRule的构造方法 -- */
 
-    public PaddingRule(String paddingCharacter, int paddingLength, Direction position, boolean ignoreExtension) {
+    public PaddingRule(PaddingFlag flag, String paddingCharacter, int paddingLength,
+                       Direction position, boolean ignoreExtension) {
+        this.flag = flag;
         this.paddingCharacter = paddingCharacter;
         this.paddingLength = paddingLength;
         this.position = position;
@@ -53,16 +57,16 @@ public class PaddingRule implements Rule {
     @Override
     public String exec(FileModel file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
+        String paddingString;
 
-        if (fileName.length() < paddingLength) {
-            if (position == Direction.DIRECTION_LEFT) {
-                fileName = paddingCharacter.repeat(paddingLength - fileName.length()) + fileName;
-            } else {
-                fileName = fileName + paddingCharacter.repeat(paddingLength - fileName.length());
-            }
+        if (flag == PaddingFlag.PADDING_FILL) {
+            paddingString = paddingCharacter.repeat(paddingLength);
+        } else {
+            paddingString = paddingCharacter.repeat(paddingLength - fileName.length());
         }
 
-        return fileName + ((ignoreExtension) ? file.getExtension() : "");
+        return ((position == Direction.DIRECTION_LEFT) ? (paddingString + fileName) : (fileName + paddingString))
+                + ((ignoreExtension) ? file.getExtension() : "");
     }
 
     @Override
@@ -77,7 +81,8 @@ public class PaddingRule implements Rule {
 
     @Override
     public String getDescription() {
-        return "在" + ((position == Direction.DIRECTION_LEFT) ? "左" : "右") + "边填充字符\"" +
-                paddingCharacter + "\"保持长度" + paddingLength + ((ignoreExtension) ? "(忽略扩展名)" : "");
+        return "在" + ((position == Direction.DIRECTION_LEFT) ? "左" : "右") + "边填充字符\"" + paddingCharacter + "\""
+                + ((flag == PaddingFlag.PADDING_FILL) ? (paddingLength + "次") : ("以保持长度" + paddingLength))
+                + ((ignoreExtension) ? "(忽略扩展名)" : "");
     }
 }

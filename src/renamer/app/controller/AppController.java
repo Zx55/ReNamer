@@ -12,7 +12,6 @@ package renamer.app.controller;
 import renamer.config.Config;
 import renamer.model.file.*;
 import renamer.model.rule.Rule;
-import renamer.model.rule.generic.ExtensionRule;
 import renamer.model.wrapper.*;
 import renamer.util.Util;
 
@@ -32,7 +31,7 @@ import javafx.stage.*;
 /**
  * 主体窗口布局{@code ../layout/App.fxml}对应的控制对象
  */
-public class AppController implements Initializable {
+public final class AppController implements Initializable {
     /* FXML组件 */
     // App的根元素
     @FXML private AnchorPane appRoot;
@@ -78,20 +77,8 @@ public class AppController implements Initializable {
         bindFileTableColumn();
         bindRuleTableColumn();
 
-        Rule[] rules = {
-                new ExtensionRule("ini", true),
-                new ExtensionRule("txt", true),
-                new ExtensionRule("cpp", false),
-                new ExtensionRule("add", false),
-                new ExtensionRule("zip", true)
-        };
-
-        for (Rule rule : rules) {
-            ruleTable.getItems().add(new RuleWrapper(rule));
-        }
-
-        String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
-        //String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        //String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
+        String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
         try {
             FileModel[] files = {
                     new FileModel(parentDir + "main.m"),
@@ -153,7 +140,7 @@ public class AppController implements Initializable {
             row.setOnMouseClicked(event -> {
                 boolean empty = row.isEmpty();
                 removeRuleContextMenu.setDisable(empty);
-                selectedFileIndex = (empty) ? null : row.getIndex();
+                selectedRuleIndex = (empty) ? null : row.getIndex();
                 // 在空白区域双击左键添加规则
                 if (empty && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                     addRule();
@@ -407,27 +394,31 @@ public class AppController implements Initializable {
                     .getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
             ruleEditor.setScene(new Scene(loader.load(), 600, 385));
+            // 向规则编辑器传入要编辑的规则并记录该controller
             RuleEditorController controller = loader.getController();
-            // 向规则编辑器传入要编辑的规则
             controller.initRule(rule);
 
             ruleEditor.setTitle("编辑规则");
             ruleEditor.setResizable(false);
             ruleEditor.initModality(Modality.APPLICATION_MODAL);
+            ruleEditor.showAndWait();
 
-            ruleEditor.show();
+            // 获取创建的规则
+            Rule newRule = controller.getRetRule();
+            if (newRule != null) {
+                addOrEditRule(newRule);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * 提供接口，使{@code RuleEditor}窗口向{@code App}发送一个{@code Rule}对象
+     * 将新规则添加到{@code ruleTable}中
      * @param rule {@code RuleEditor}窗口创建的{@code Rule}对象
-     * @param edit 是否是编辑模式
      */
-    void addOrEditRule(Rule rule, boolean edit) {
-        if (!edit) {
+    private void addOrEditRule(Rule rule) {
+        if (selectedRuleIndex == null) {
             ruleTable.getItems().add(new RuleWrapper(rule));
         } else {
             ruleTable.getItems().set(selectedRuleIndex, new RuleWrapper(rule));

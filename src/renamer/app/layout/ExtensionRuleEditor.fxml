@@ -10,42 +10,45 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ruleEditorRoot" prefHeight="385.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.RuleEditorController">
+<AnchorPane fx:id="ruleEditorRoot" prefHeight="385.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="renamer.app.controller.RuleEditorController">
     <ChoiceBox fx:id="ruleTypeChoice" layoutX="50.0" layoutY="40.0" prefHeight="30.0" prefWidth="160.0" value="扩展名规则">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="插入规则" />
-                <String fx:value="删除规则" />
-                <String fx:value="填充规则" />
-                <String fx:value="序列化规则" />
-                <String fx:value="移除规则" />
-                <String fx:value="替换规则" />
-                <String fx:value="正则表达式规则" />
-                <String fx:value="扩展名规则" />
-                <String fx:value="大小写规则" />
+                <String fx:value="插入规则"/>
+                <String fx:value="删除规则"/>
+                <String fx:value="填充规则"/>
+                <String fx:value="序列化规则"/>
+                <String fx:value="移除规则"/>
+                <String fx:value="替换规则"/>
+                <String fx:value="正则表达式规则"/>
+                <String fx:value="扩展名规则"/>
+                <String fx:value="大小写规则"/>
             </FXCollections>
         </items>
     </ChoiceBox>
     <Label layoutX="60.0" layoutY="100.0" text="新扩展名">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </Label>
-    <TextField fx:id="exRuleEx" layoutX="150.0" layoutY="94.0" prefHeight="30.0" prefWidth="370.0" />
-    <Label layoutX="150.0" layoutY="142.0" text="无需添加标点 ." />
+    <TextField fx:id="exRuleEx" layoutX="150.0" layoutY="94.0" prefHeight="30.0" prefWidth="370.0"/>
+    <Label layoutX="150.0" layoutY="142.0" text="无需添加标点 ."/>
     <CheckBox fx:id="exRuleAppend" layoutX="60.0" layoutY="270.0" mnemonicParsing="false" text="添加到原始文件名最后">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </CheckBox>
-    <Button layoutX="120.0" layoutY="315.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="确定">
+    <Button layoutX="120.0" layoutY="315.0" mnemonicParsing="false" onAction="#saveExtensionRule" prefHeight="30.0"
+            prefWidth="150.0" text="确定">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </Button>
-    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0" prefWidth="150.0" text="取消">
+    <Button layoutX="330.0" layoutY="315.0" mnemonicParsing="false" onAction="#exitEditor" prefHeight="30.0"
+            prefWidth="150.0" text="取消">
         <font>
-            <Font size="13.0" />
+            <Font size="13.0"/>
         </font>
     </Button>
 </AnchorPane>

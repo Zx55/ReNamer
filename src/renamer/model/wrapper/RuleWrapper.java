@@ -16,7 +16,7 @@ import renamer.model.rule.Rule;
  * 存储在{@code ruleTable}中的规则对象
  * 包装了{@code Rule}和一些相关属性
  */
-public class RuleWrapper implements Wrapper {
+public final class RuleWrapper implements Wrapper {
     // 包装的规则模型
     private Rule rule;
     // 是否被选中

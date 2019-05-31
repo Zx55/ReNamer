@@ -19,7 +19,7 @@ import java.nio.file.attribute.BasicFileAttributes;
  * 文件模型
  * 包含了文件的各种属性以及对文件重命名的方法
  */
-public class FileModel {
+public final class FileModel {
     // 文件对象
     private File file;
     // 文件属性

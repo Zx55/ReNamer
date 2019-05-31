@@ -18,7 +18,7 @@ import java.io.File;
  * 存储在{@code fileTable}中的文件对象
  * 包装了{@code FileModel}和一些相关属性
  */
-public class FileWrapper implements Wrapper {
+public final class FileWrapper implements Wrapper {
     // 包装的文件模型
     private FileModel file;
     // 执行规则后的预览信息
