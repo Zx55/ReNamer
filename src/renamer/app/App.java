@@ -26,10 +26,12 @@ public final class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("layout/App.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/App.fxml"));
+        Scene app = new Scene(loader.load(), 500, 700);
+        app.getStylesheets().add(getClass().getResource("style/App.css").toExternalForm());
 
         primaryStage.setTitle("ReNamer");
-        primaryStage.setScene(new Scene(root, 500, 700));
+        primaryStage.setScene(app);
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(event -> {
             Config.getConfig().dumpConfig();

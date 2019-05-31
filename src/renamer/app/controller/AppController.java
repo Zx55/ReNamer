@@ -9,6 +9,7 @@
 
 package renamer.app.controller;
 
+import javafx.util.Pair;
 import renamer.config.Config;
 import renamer.model.file.*;
 import renamer.model.rule.Rule;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+import javafx.collections.ListChangeListener;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -61,10 +63,17 @@ public final class AppController implements Initializable {
     @FXML private CheckMenuItem sizeMBColumnState;
     @FXML private CheckMenuItem createdTimeColumnState;
     @FXML private CheckMenuItem modifiedTimeColumnState;
+    // 状态栏
+    @FXML private Label ruleState;
+    @FXML private Label fileState;
 
     // 记录表格中选中的条目索引
     private Integer selectedRuleIndex;
     private Integer selectedFileIndex;
+
+    // 对象序列化格式
+    private static final DataFormat SERIALIZED_MIME_TYPE =
+            new DataFormat("application/x-java-serialized-object");
 
     /**
      * 初始化{@code App}界面
@@ -76,28 +85,8 @@ public final class AppController implements Initializable {
         selectedRuleIndex = null;
         bindFileTableColumn();
         bindRuleTableColumn();
-
-        //String parentDir = "D:\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
-        String parentDir = "C:\\Users\\czrcn\\OneDrive\\BUAA\\归档\\Objective-C\\第九讲\\";
-        try {
-            FileModel[] files = {
-                    new FileModel(parentDir + "main.m"),
-                    new FileModel(parentDir + "News.h"),
-                    new FileModel(parentDir + "News.m"),
-                    new FileModel(parentDir + "NewsDb.m"),
-                    new FileModel(parentDir + "NewsDb.h"),
-                    new FileModel(parentDir + "NewsList.m"),
-                    new FileModel(parentDir + "NewsList.h"),
-                    new FileModel(parentDir + "16041217_陈泽人_第九讲.doc"),
-            };
-
-            for (var file : files) {
-                fileTable.getItems().add(new FileWrapper(file));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        listenOnFileTableChange();
+        listenOnRuleTableChange();
     }
 
     /**
@@ -106,9 +95,9 @@ public final class AppController implements Initializable {
      * 添加鼠标事件
      */
     private void bindFileTableColumn() {
-        // 绑定fileTable行鼠标事件
         fileTable.setRowFactory(table -> {
             TableRow<FileWrapper> row = new TableRow<>();
+            // 鼠标点击TableRow
             row.setOnMouseClicked(event -> {
                 boolean empty = row.isEmpty();
                 removeFileContextMenu.setDisable(empty);
@@ -118,6 +107,10 @@ public final class AppController implements Initializable {
                     addFile();
                 }
             });
+            row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
+            row.setOnDragOver(event -> dragOverTable(row, event));
+            row.setOnDragDropped(event -> dragDropOnTable(row, event));
+
             return row;
         });
         // 绑定每一列的值
@@ -134,9 +127,9 @@ public final class AppController implements Initializable {
      * 添加鼠标事件
      */
     private void bindRuleTableColumn() {
-        // 绑定ruleTable行鼠标事件
         ruleTable.setRowFactory(table -> {
             TableRow<RuleWrapper> row = new TableRow<>();
+            // 鼠标点击TableRow
             row.setOnMouseClicked(event -> {
                 boolean empty = row.isEmpty();
                 removeRuleContextMenu.setDisable(empty);
@@ -146,6 +139,10 @@ public final class AppController implements Initializable {
                     addRule();
                 }
             });
+            row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
+            row.setOnDragOver(event -> dragOverTable(row, event));
+            row.setOnDragDropped(event -> dragDropOnTable(row, event));
+
             return row;
         });
         // 绑定每一列的值
@@ -153,6 +150,70 @@ public final class AppController implements Initializable {
         bindSelectedBoxWithColumn(ruleSelectedColumn);
         bindPropertyWithColumn(ruleTypeColumn, "type");
         bindPropertyWithColumn(ruleDescriptionColumn, "description");
+    }
+
+    /**
+     * 鼠标开始拖动一个{@code TableRow}
+     * @param row 鼠标拖动的{@code TableRow}
+     * @param event 鼠标事件
+     * @param <T> {@code TableRow}中存储的对象类型
+     */
+    private <T> void dragDetectedOnTable(TableRow<T> row, MouseEvent event) {
+        if (!row.isEmpty()) {
+            Dragboard board = row.startDragAndDrop(TransferMode.MOVE);
+            ClipboardContent content = new ClipboardContent();
+            board.setDragView(row.snapshot(null, null));
+            content.put(SERIALIZED_MIME_TYPE, new Pair<>(row.getTableView().getId(), row.getIndex()));
+            board.setContent(content);
+            event.consume();
+        }
+    }
+
+    /**
+     * 鼠标将{@code TableRow}对象拖动到另一个{@code TableRow}对象上方
+     * @param row 拖动到的{@code TableRow}
+     * @param event 拖动事件
+     * @param <T> {@code TableRow}中存储的对象类型
+     */
+    private <T> void dragOverTable(TableRow<T> row, DragEvent event) {
+        Dragboard board = event.getDragboard();
+        // 必须是同一个TableView才能拖拽
+        if (board.hasContent(SERIALIZED_MIME_TYPE)) {
+            @SuppressWarnings("unchecked")
+            var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
+            if (row.getIndex() != content.getValue()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                event.consume();
+            }
+        }
+    }
+
+    /**
+     * 鼠标将{@code TableRow}对象放下
+     * @param row 鼠标放下的{@code TableRow}
+     * @param event 拖动事件
+     * @param <T> {@code TableRow}中存储的对象类型
+     */
+    private <T> void dragDropOnTable(TableRow<T> row, DragEvent event) {
+        Dragboard board = event.getDragboard();
+        TableView<T> table = row.getTableView();
+        boolean result = false;
+
+        if (board.hasContent(SERIALIZED_MIME_TYPE)) {
+            @SuppressWarnings("unchecked")
+            var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
+            if (content.getKey().equals(table.getId())) {
+                result = true;
+                int dragIndex = content.getValue();
+                T wrapper = table.getItems().remove(dragIndex);
+                int dropIndex = row.isEmpty() ? table.getItems().size() : row.getIndex();
+                table.getItems().add(dropIndex, wrapper);
+                table.getSelectionModel().select(dropIndex);
+            }
+        }
+
+        event.setDropCompleted(result);
+        event.consume();
     }
 
     /**
@@ -212,7 +273,7 @@ public final class AppController implements Initializable {
      * 监听{@code fileTable}鼠标点击事件
      * @param event 点击事件
      */
-    @FXML private void mouseClickOnFileTable(MouseEvent event) {
+    @FXML private void mouseClickedOnFileTable(MouseEvent event) {
         if (fileTable.getItems().isEmpty()) {
             // fileTable只有在不存在TableRow时才会设置ContextMenu的可用性
             removeFileContextMenu.setDisable(true);
@@ -226,7 +287,7 @@ public final class AppController implements Initializable {
      * 监听{@code ruleTable}鼠标点击事件
      * @param event 点击事件
      */
-    @FXML private void mouseClickOnRuleTable(MouseEvent event) {
+    @FXML private void mouseClickedOnRuleTable(MouseEvent event) {
         if (ruleTable.getItems().isEmpty()) {
             removeRuleContextMenu.setDisable(true);
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
@@ -239,7 +300,7 @@ public final class AppController implements Initializable {
      * 监听鼠标在{@code fileTable}上拖动文件(夹)
      * @param event 拖动事件
      */
-    @FXML private void mouseDragFileTable(DragEvent event) {
+    @FXML private void dragOverFileTableFromOutside(DragEvent event) {
         if (event.getGestureSource() != fileTable && event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
@@ -250,13 +311,10 @@ public final class AppController implements Initializable {
      * 监听鼠标将拖动文件(夹)放在{@code fileTable}上
      * @param event 拖动事件
      */
-    @FXML private void mouseDropOnFileTable(DragEvent event) {
+    @FXML private void dragDropOnFileTableFromOutside(DragEvent event) {
         Dragboard board = event.getDragboard();
-        boolean result = false;
 
         if (board.hasFiles()) {
-            result = true;
-
             var files = board.getFiles();
             StringBuilder builder = new StringBuilder();
             int errorCount = 0;
@@ -304,9 +362,35 @@ public final class AppController implements Initializable {
                         + builder.toString() + ((errorCount > 5) ? "\n..." : "");
                 Util.showAlert(Alert.AlertType.ERROR, "Error", error);
             }
+
+            event.setDropCompleted(true);
+        } else {
+            event.setDropCompleted(false);
         }
-        event.setDropCompleted(result);
+
         event.consume();
+    }
+
+    /**
+     * 监听{@code fileTable}中的变化
+     * 显示在文件状态栏上
+     * TODO: 预览
+     */
+    private void listenOnFileTableChange() {
+        fileState.setText(String.format("%3d 个文件", fileTable.getItems().size()));
+        fileTable.getItems().addListener((ListChangeListener<FileWrapper>) change ->
+                fileState.setText(String.format("%3d 个文件", fileTable.getItems().size())));
+    }
+
+    /**
+     * 监听{@code ruleTable}中的变化
+     * 显示在规则状态栏上
+     * TODO: 预览
+     */
+    private void listenOnRuleTableChange() {
+        ruleState.setText(String.format("%3d 条规则", ruleTable.getItems().size()));
+        ruleTable.getItems().addListener((ListChangeListener<RuleWrapper>) change ->
+                ruleState.setText(String.format("%3d 条规则", ruleTable.getItems().size())));
     }
 
     /**

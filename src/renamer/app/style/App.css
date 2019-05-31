@@ -1,0 +1,16 @@
+#toolBarButton {
+    -fx-background-insets: 0;
+    -fx-background-color: #f4f4f4;
+}
+
+#toolBarButton:hover {
+    -fx-background-color: #e2e2e2;
+}
+
+#toolBarButton:pressed {
+    -fx-background-color: #d3d3d3;
+}
+
+#tableNoCol {
+    -fx-alignment: CENTER-RIGHT;
+}
