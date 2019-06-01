@@ -12,8 +12,6 @@ package renamer.config;
 import javafx.scene.control.Alert;
 import renamer.util.Util;
 
-// TODO: 使用序列化将Config类存储下来
-
 /**
  * 全局的配置选项
  * 单例模式，使用{@code Config.getConfig()}获取

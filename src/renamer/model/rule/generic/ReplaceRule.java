@@ -30,7 +30,7 @@ import java.util.regex.*;
  *         Rule rule = new ReplaceRule(targetPattern, replacePattern, ReplaceFlag.REPLACE_ALL,
  *                                     true, false, true);
  *
- *         System.out.println(rule.exec(file, 0));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }

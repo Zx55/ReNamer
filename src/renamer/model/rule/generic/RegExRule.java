@@ -9,14 +9,14 @@
 
 package renamer.model.rule.generic;
 
-import javafx.scene.control.Alert;
-import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
 import renamer.model.rule.flag.ReplaceFlag;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 import java.util.regex.*;
 
+import javafx.scene.control.Alert;
 /**
  * 正则表达式规则
  * 通过正则表达式的捕获以及替换来修改文件名
@@ -29,12 +29,13 @@ import java.util.regex.*;
  *         String replacePattern = "$1";
  *         Rule rule = new RegExRule(targetPattern, replacePattern, ReplaceFlag.REPLACE_ALL, true, true);
  *
- *         System.out.println(rule.exec(file, 0));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
  * }</pre>
  */
+// FIXME: \\存在bug
 public class RegExRule implements Rule {
     // 被替换字符串
     private String targetPattern;
@@ -59,7 +60,7 @@ public class RegExRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         try {
             String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
             Matcher matcher = getPatternByFlag().matcher(fileName);

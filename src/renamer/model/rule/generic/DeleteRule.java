@@ -9,8 +9,8 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.*;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
@@ -24,7 +24,7 @@ import renamer.util.Util;
  *         Position position = new DeletePosition(DeleteFlag.DELETE_BEG_END, 2, 0, 3, Direction.DIRECTION_RIGHT);
  *         Rule rule = new DeleteRule(position, true);
  *
- *         System.out.println(rule.exec(), 0);
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
@@ -44,7 +44,7 @@ public final class DeleteRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
         position.setLength(fileName.length());
         int beg = Util.checkPosition(position.getPosition()[0], fileName.length());

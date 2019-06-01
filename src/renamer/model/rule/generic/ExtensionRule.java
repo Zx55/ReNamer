@@ -9,8 +9,8 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
@@ -22,7 +22,7 @@ import renamer.util.Util;
  *     try {
  *         var file = new FileModel("D:\\test.txt");
  *         Rule rule = new ExtensionRule("ini", false);
- *         System.out.println(rule.exec(file, 0));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
@@ -42,7 +42,7 @@ public final class ExtensionRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, !appendToEnd);
         return fileName + "." + newExtension;
     }

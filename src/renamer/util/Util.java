@@ -12,6 +12,7 @@ package renamer.util;
 import javafx.scene.control.Alert;
 import renamer.config.*;
 import renamer.model.file.FileModel;
+import renamer.model.wrapper.FileWrapper;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -93,13 +94,13 @@ public final class Util {
      * 根据是否忽略扩展名来获取文件名
      * @param file 要获取文件名的文件
      * @param ignore 是否忽略扩展名标志位
-     * @return 文件名
+     * @return 如果 {@code preview}不为空，返回{@code preview}，否则返回{@code fileName}
      */
-    public static String getFileNameByIgnoreExtension(FileModel file, boolean ignore) {
-        if (ignore) {
-            return file.getFileNameWithOutExtension();
+    public static String getFileNameByIgnoreExtension(FileWrapper file, boolean ignore) {
+        if (file.getPreview().equals("")) {
+            return ignore ? file.getFileNameWithoutExtension() : file.getFileName();
         } else {
-            return file.getFileName();
+            return ignore ? file.getPreviewWithoutExtension() : file.getPreview();
         }
     }
 

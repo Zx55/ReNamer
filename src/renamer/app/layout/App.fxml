@@ -53,6 +53,9 @@
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" onAction="#selectAllRules" text="选择全部"/>
             <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" onAction="#preview" text="预览"/>
+            <MenuItem mnemonicParsing="false" text="重命名"/>
         </Menu>
         <Menu mnemonicParsing="false" text="预设">
             <MenuItem mnemonicParsing="false" text="Action 1"/>
@@ -74,9 +77,8 @@
     <Button id="toolBarButton" layoutX="215.0" layoutY="35.0" mnemonicParsing="false" onAction="#addRule"
             prefHeight="40.0" prefWidth="100.0" text="添加规则"/>
     <Button id="toolBarButton" layoutX="395.0" layoutY="35.0" mnemonicParsing="false" prefHeight="40.0"
-            prefWidth="100.0"
-            text="重命名"/>
-    <TableView fx:id="ruleTable" layoutY="80.0" onMouseClicked="#mouseClickedOnRuleTable" prefHeight="270.0"
+            prefWidth="100.0" text="重命名"/>
+    <TableView fx:id="ruleTable" layoutY="80.0" onMouseClicked="#onMouseClickRuleTable" prefHeight="270.0"
                prefWidth="500.0">
         <placeholder>
             <Label text="双击添加规则"/>
@@ -105,8 +107,8 @@
             <Font size="13.0"/>
         </font>
     </Label>
-    <TableView fx:id="fileTable" layoutY="380.0" onDragDropped="#dragDropOnFileTableFromOutside"
-               onDragOver="#dragOverFileTableFromOutside" onMouseClicked="#mouseClickedOnFileTable" prefHeight="290.0"
+    <TableView fx:id="fileTable" layoutY="380.0" onDragDropped="#onDragDropFileTableFromOutside"
+               onDragOver="#onDragOverFileTableFromOutside" onMouseClicked="#onMouseClickFileTable" prefHeight="290.0"
                prefWidth="500.0">
         <placeholder>
             <Label text="双击添加文件"/>

@@ -9,7 +9,7 @@
 
 package renamer.model.rule;
 
-import renamer.model.file.FileModel;
+import renamer.model.wrapper.FileWrapper;
 
 /**
  * 规则模型
@@ -18,11 +18,11 @@ public interface Rule {
     /**
      * 在原有文件名上执行规则
      * @param file 原有文件
-     * @param index 文件在{@code FileContainer}中的索引
+     * @param index 文件在{@code fileTable}中的索引
      *              对容器相关的规则有效(文件在容器中的位置影响命名结果)
      * @return 执行规则后的完整文件名(带扩展名)
      */
-    String exec(FileModel file, int index);
+    String exec(FileWrapper file, int index);
 
     /**
      * 获取规则类型

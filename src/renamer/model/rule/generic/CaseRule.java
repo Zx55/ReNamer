@@ -9,26 +9,14 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
 import renamer.model.rule.flag.CaseFlag;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
  * 大小写规则
  * 将文件名根据{@code flag}转换大小写
- *
- * e.g.
- * <pre>{@code
- *     try {
- *         var file = new FileModel("D:\\teSt_Ttest.txt");
- *         Rule rule = new CaseRule(CaseFlag.CASE_INVERT, " ", true);
- *
- *         System.out.println(rule.exec(file, 0));
- *     } catch (Exception e) {
- *         e.printStackTrace();
- *     }
- * }</pre>
  */
 public final class CaseRule implements Rule {
     // 大小写模式
@@ -47,7 +35,7 @@ public final class CaseRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
 
         switch (flag) {

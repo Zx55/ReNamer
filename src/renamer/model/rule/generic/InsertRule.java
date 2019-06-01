@@ -9,8 +9,8 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.*;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
@@ -25,7 +25,7 @@ import renamer.util.Util;
  *         Position position = new InsertPosition(InsertFlag.INSERT_INDEX, 2, Direction.DIRECTION_LEFT);
  *         Rule rule = new InsertRule(pattern, position, true);
  *
- *         System.out.println(rule.exec(), 0);
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
@@ -49,7 +49,7 @@ public final class InsertRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
         position.setLength(fileName.length());
         int pos = Util.checkPosition(position.getPosition()[0], fileName.length());

@@ -23,6 +23,8 @@ public final class FileWrapper implements Wrapper {
     private FileModel file;
     // 执行规则后的预览信息
     private String preview;
+    // 执行规则后不带扩展名的预览信息
+    private String previewWithoutExtension;
     // 执行规则产生的错误信息
     private String error;
     // 是否被选中
@@ -33,6 +35,7 @@ public final class FileWrapper implements Wrapper {
     public FileWrapper(FileModel file) {
         this.file = file;
         preview = "";
+        previewWithoutExtension = "";
         error = "";
         selected.setValue(true);
     }
@@ -75,12 +78,32 @@ public final class FileWrapper implements Wrapper {
         return file.getFileName();
     }
 
+    public String getFileNameWithoutExtension() {
+        return file.getFileNameWithOutExtension();
+    }
+
     public String getExtension() {
         return file.getExtension();
     }
 
     public String getPreview() {
         return preview;
+    }
+
+    public void setPreview(String preview) {
+        if (!preview.equals("")) {
+            this.preview = preview;
+            String[] splits = preview.split("\\.");
+            previewWithoutExtension = splits.length == 1 ? splits[0] :
+                    preview.substring(0, preview.length() - (1 + splits[splits.length - 1].length()));
+        } else {
+            this.preview = "";
+            previewWithoutExtension = "";
+        }
+    }
+
+    public String getPreviewWithoutExtension() {
+        return previewWithoutExtension;
     }
 
     public String getError() {

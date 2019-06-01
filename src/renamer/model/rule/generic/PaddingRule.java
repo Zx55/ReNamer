@@ -9,10 +9,10 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.Rule;
 import renamer.model.rule.flag.PaddingFlag;
 import renamer.model.rule.position.Direction;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
@@ -25,7 +25,7 @@ import renamer.util.Util;
  *         var file = new FileModel("C:\\test.txt");
  *         Rule rule = new PaddingRule(PaddingFlag.PADDING_FILL, "0", 20, Direction.DIRECTION_LEFT, false);
  *
- *         System.out.println(rule.exec(file, 0));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
@@ -55,7 +55,7 @@ public final class PaddingRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
         String paddingString;
 

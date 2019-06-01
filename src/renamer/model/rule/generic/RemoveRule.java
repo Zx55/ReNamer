@@ -26,7 +26,7 @@ import renamer.model.rule.flag.ReplaceFlag;
  *         Rule rule = new RemoveRule(targetPattern, ReplaceFlag.REPLACE_ALL,
  *                 true, true, true);
  *
- *         System.out.println(rule.exec(file, 0));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }

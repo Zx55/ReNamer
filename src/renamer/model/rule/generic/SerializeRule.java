@@ -9,9 +9,9 @@
 
 package renamer.model.rule.generic;
 
-import renamer.model.file.FileModel;
 import renamer.model.rule.Position;
 import renamer.model.rule.Rule;
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 /**
@@ -25,7 +25,7 @@ import renamer.util.Util;
  *         Position position = new InsertPosition(InsertFlag.INSERT_SUFFIX, 0, Direction.DIRECTION_LEFT);
  *         Rule rule = new SerializeRule(position, 1, 3, 2, 2, 2, true);
  *
- *         System.out.println(rule.exec(file, 5));
+ *         System.out.println(rule.exec(new FileWrapper(file), 0));
  *     } catch (Exception e) {
  *         e.printStackTrace();
  *     }
@@ -86,7 +86,7 @@ public final class SerializeRule implements Rule {
     }
 
     @Override
-    public String exec(FileModel file, int index) {
+    public String exec(FileWrapper file, int index) {
         String fileName = Util.getFileNameByIgnoreExtension(file, ignoreExtension);
         position.setLength(fileName.length());
         int pos = Util.checkPosition(position.getPosition()[0], fileName.length());

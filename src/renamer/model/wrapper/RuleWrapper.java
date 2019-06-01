@@ -68,6 +68,6 @@ public final class RuleWrapper implements Wrapper {
     }
 
     public String exec(FileWrapper file, int index) {
-        return rule.exec(file.getFile(), index);
+        return rule.exec(file, index);
     }
 }

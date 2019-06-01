@@ -9,7 +9,6 @@
 
 package renamer.app.controller;
 
-import javafx.util.Pair;
 import renamer.config.Config;
 import renamer.model.file.*;
 import renamer.model.rule.Rule;
@@ -29,6 +28,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.MouseButton;
 import javafx.stage.*;
+import javafx.util.Pair;
 
 /**
  * 主体窗口布局{@code ../layout/App.fxml}对应的控制对象
@@ -67,6 +67,7 @@ public final class AppController implements Initializable {
     @FXML private Label ruleState;
     @FXML private Label fileState;
 
+    // TODO: 使用TableView.getSelectModel.select()重构
     // 记录表格中选中的条目索引
     private Integer selectedRuleIndex;
     private Integer selectedFileIndex;
@@ -85,8 +86,8 @@ public final class AppController implements Initializable {
         selectedRuleIndex = null;
         bindFileTableColumn();
         bindRuleTableColumn();
-        listenOnFileTableChange();
-        listenOnRuleTableChange();
+        onFileTableChange();
+        onRuleTableChange();
     }
 
     /**
@@ -109,7 +110,7 @@ public final class AppController implements Initializable {
             });
             row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
             row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropOnTable(row, event));
+            row.setOnDragDropped(event -> dragDropTable(row, event));
 
             return row;
         });
@@ -147,7 +148,7 @@ public final class AppController implements Initializable {
             });
             row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
             row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropOnTable(row, event));
+            row.setOnDragDropped(event -> dragDropTable(row, event));
 
             return row;
         });
@@ -157,6 +158,8 @@ public final class AppController implements Initializable {
         bindPropertyWithColumn(ruleTypeColumn, "type");
         bindPropertyWithColumn(ruleDescriptionColumn, "description");
     }
+
+    // TODO: 多重拖拽
 
     /**
      * 鼠标开始拖动一个{@code TableRow}
@@ -176,21 +179,26 @@ public final class AppController implements Initializable {
     }
 
     /**
-     * 鼠标将{@code TableRow}对象拖动到另一个{@code TableRow}对象上方
+     * 鼠标将对象拖动到一个{@code TableRow}对象上方
      * @param row 拖动到的{@code TableRow}
      * @param event 拖动事件
      * @param <T> {@code TableRow}中存储的对象类型
      */
     private <T> void dragOverTable(TableRow<T> row, DragEvent event) {
         Dragboard board = event.getDragboard();
-        // 必须是同一个TableView才能拖拽
+
         if (board.hasContent(SERIALIZED_MIME_TYPE)) {
+            // 拖拽同一个表格的行改变顺序
             @SuppressWarnings("unchecked")
             var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
             if (row.getIndex() != content.getValue()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 event.consume();
             }
+        } else if (board.hasFiles()) {
+            // 从外部拖拽文件(夹)
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            event.consume();
         }
     }
 
@@ -200,25 +208,29 @@ public final class AppController implements Initializable {
      * @param event 拖动事件
      * @param <T> {@code TableRow}中存储的对象类型
      */
-    private <T> void dragDropOnTable(TableRow<T> row, DragEvent event) {
+    private <T> void dragDropTable(TableRow<T> row, DragEvent event) {
         Dragboard board = event.getDragboard();
         TableView<T> table = row.getTableView();
-        boolean result = false;
 
         if (board.hasContent(SERIALIZED_MIME_TYPE)) {
+            // 拖拽同一个表格的行改变顺序
             @SuppressWarnings("unchecked")
             var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
             if (content.getKey().equals(table.getId())) {
-                result = true;
                 int dragIndex = content.getValue();
                 T wrapper = table.getItems().remove(dragIndex);
                 int dropIndex = row.isEmpty() ? table.getItems().size() : row.getIndex();
                 table.getItems().add(dropIndex, wrapper);
                 table.getSelectionModel().select(dropIndex);
+                event.setDropCompleted(true);
             }
+        } else if (board.hasFiles()) {
+            // 从外部拖拽文件(夹)
+            dragFileDropFromOutside(board);
+            event.setDropCompleted(true);
+        } else {
+            event.setDropCompleted(false);
         }
-
-        event.setDropCompleted(result);
         event.consume();
     }
 
@@ -279,7 +291,7 @@ public final class AppController implements Initializable {
      * 监听{@code fileTable}鼠标点击事件
      * @param event 点击事件
      */
-    @FXML private void mouseClickedOnFileTable(MouseEvent event) {
+    @FXML private void onMouseClickFileTable(MouseEvent event) {
         if (fileTable.getItems().isEmpty()) {
             // fileTable只有在不存在TableRow时才会设置ContextMenu的可用性
             removeFileContextMenu.setDisable(true);
@@ -293,7 +305,7 @@ public final class AppController implements Initializable {
      * 监听{@code ruleTable}鼠标点击事件
      * @param event 点击事件
      */
-    @FXML private void mouseClickedOnRuleTable(MouseEvent event) {
+    @FXML private void onMouseClickRuleTable(MouseEvent event) {
         if (ruleTable.getItems().isEmpty()) {
             removeRuleContextMenu.setDisable(true);
             if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
@@ -306,8 +318,8 @@ public final class AppController implements Initializable {
      * 监听鼠标在{@code fileTable}上拖动文件(夹)
      * @param event 拖动事件
      */
-    @FXML private void dragOverFileTableFromOutside(DragEvent event) {
-        if (event.getGestureSource() != fileTable && event.getDragboard().hasFiles()) {
+    @FXML private void onDragOverFileTableFromOutside(DragEvent event) {
+        if (event.getDragboard().hasFiles()) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
@@ -317,86 +329,143 @@ public final class AppController implements Initializable {
      * 监听鼠标将拖动文件(夹)放在{@code fileTable}上
      * @param event 拖动事件
      */
-    @FXML private void dragDropOnFileTableFromOutside(DragEvent event) {
+    @FXML private void onDragDropFileTableFromOutside(DragEvent event) {
         Dragboard board = event.getDragboard();
 
         if (board.hasFiles()) {
-            var files = board.getFiles();
-            StringBuilder builder = new StringBuilder();
-            int errorCount = 0;
-            int filesCount = 0;
+            dragFileDropFromOutside(board);
+            event.setDropCompleted(true);
+        } else {
+            event.setDropCompleted(false);
+        }
+        event.consume();
+    }
 
-            for (File file : files) {
-                if (!file.exists()) {
+    /**
+     * 处理从外部拖拽进{@code fileTable}的文件(夹)
+     * @param board 拖拽队列
+     */
+    private void dragFileDropFromOutside(Dragboard board) {
+        var files = board.getFiles();
+        StringBuilder builder = new StringBuilder();
+        int errorCount = 0;
+        int filesCount = 0;
+
+        for (File file : files) {
+            if (!file.exists()) {
+                continue;
+            }
+
+            if (file.isFile()) {
+                ++filesCount;
+                try {
+                    fileTable.getItems().add(new FileWrapper(file));
+                } catch (InvalidFileModelException e) {
+                    if (++errorCount <= 5) {
+                        builder.append("\n").append(file.getName());
+                    }
+                }
+            } else if (file.isDirectory()) {
+                File[] childFiles = file.listFiles();
+                if (childFiles == null) {
                     continue;
                 }
 
-                if (file.isFile()) {
+                for (File childFile : childFiles) {
+                    if (!childFile.isFile()) {
+                        continue;
+                    }
+
                     ++filesCount;
                     try {
-                        fileTable.getItems().add(new FileWrapper(file));
+                        fileTable.getItems().add(new FileWrapper(childFile));
                     } catch (InvalidFileModelException e) {
                         if (++errorCount <= 5) {
                             builder.append("\n").append(file.getName());
                         }
                     }
-                } else if (file.isDirectory()) {
-                    File[] childFiles = file.listFiles();
-                    if (childFiles == null) {
-                        continue;
-                    }
-
-                    for (File childFile : childFiles) {
-                        if (!childFile.isFile()) {
-                            continue;
-                        }
-
-                        ++filesCount;
-                        try {
-                            fileTable.getItems().add(new FileWrapper(childFile));
-                        } catch (InvalidFileModelException e) {
-                            if (++errorCount <= 5) {
-                                builder.append("\n").append(file.getName());
-                            }
-                        }
-                    }
                 }
             }
-            // 错误信息弹窗
-            if (errorCount > 0) {
-                String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount)
-                        + builder.toString() + ((errorCount > 5) ? "\n..." : "");
-                Util.showAlert(Alert.AlertType.ERROR, "Error", error);
-            }
-
-            event.setDropCompleted(true);
-        } else {
-            event.setDropCompleted(false);
         }
-
-        event.consume();
+        // 错误信息弹窗
+        if (errorCount > 0) {
+            String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount)
+                    + builder.toString() + ((errorCount > 5) ? "\n..." : "");
+            Util.showAlert(Alert.AlertType.ERROR, "Error", error);
+        }
     }
 
     /**
      * 监听{@code fileTable}中的变化
-     * 显示在文件状态栏上
-     * TODO: 预览
      */
-    private void listenOnFileTableChange() {
+    private void onFileTableChange() {
+        // 状态栏初始化
         fileState.setText(String.format("%3d 个文件", fileTable.getItems().size()));
-        fileTable.getItems().addListener((ListChangeListener<FileWrapper>) change ->
-                fileState.setText(String.format("%3d 个文件", fileTable.getItems().size())));
+
+        fileTable.getItems().addListener((ListChangeListener<FileWrapper>) change -> {
+            // 状态栏显示文件数
+            fileState.setText(String.format("%3d 个文件", fileTable.getItems().size()));
+
+            try {
+                // 添加文件后自动预览
+                if (!ruleTable.getItems().isEmpty() && change.wasAdded()
+                        && Config.getConfig().getBoolean("autoPreviewWhenFilesAdded")) {
+                    preview();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**
      * 监听{@code ruleTable}中的变化
-     * 显示在规则状态栏上
-     * TODO: 预览
      */
-    private void listenOnRuleTableChange() {
+    private void onRuleTableChange() {
+        // 状态栏初始化
         ruleState.setText(String.format("%3d 条规则", ruleTable.getItems().size()));
-        ruleTable.getItems().addListener((ListChangeListener<RuleWrapper>) change ->
-                ruleState.setText(String.format("%3d 条规则", ruleTable.getItems().size())));
+
+        ruleTable.getItems().addListener((ListChangeListener<RuleWrapper>) change -> {
+            // 状态栏显示规则数
+            ruleState.setText(String.format("%3d 条规则", ruleTable.getItems().size()));
+
+            try {
+                // 改变规则后自动预览
+                if (!fileTable.getItems().isEmpty()
+                        && Config.getConfig().getBoolean("autoPreviewWhenRulesChange")) {
+                    preview();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @FXML private void preview() {
+        var files = fileTable.getItems();
+
+        // 清空上一次的规则执行
+        for (var file : files) {
+            if (file.isSelected()) {
+                file.setPreview("");
+            }
+        }
+
+        // TODO: 多线程
+        for (int i = 0; i < files.size(); ++i) {
+            var file = files.get(i);
+            if (!file.isSelected()) {
+                continue;
+            }
+
+            for (var rule : ruleTable.getItems()) {
+                if (rule.isSelected()) {
+                    file.setPreview(rule.exec(file, i));
+                }
+            }
+        }
+
+        fileTable.refresh();
     }
 
     /**
