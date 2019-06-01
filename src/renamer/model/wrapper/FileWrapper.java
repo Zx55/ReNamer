@@ -38,7 +38,7 @@ public final class FileWrapper implements Wrapper {
         preview = "";
         previewWithoutExtension = "";
         error = "";
-        selected.setValue(true);
+        select();
     }
 
     public FileWrapper(File file) throws InvalidFileModelException {

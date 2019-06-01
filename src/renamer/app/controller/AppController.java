@@ -69,11 +69,6 @@ public final class AppController implements Initializable {
     @FXML private Label ruleState;
     @FXML private Label fileState;
 
-    // TODO: 使用TableView.getSelectModel.select()重构
-    // 记录表格中选中的条目索引
-    private Integer selectedRuleIndex;
-    private Integer selectedFileIndex;
-
     /* -- 鼠标拖动事件 -- */
     // 对象序列化格式
     private static final DataFormat SERIALIZED_MIME_TYPE =
@@ -87,8 +82,6 @@ public final class AppController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        selectedFileIndex = null;
-        selectedRuleIndex = null;
         bindFileTableColumn();
         bindRuleTableColumn();
         onFileTableChange();
@@ -121,7 +114,6 @@ public final class AppController implements Initializable {
             row.setOnMouseClicked(event -> {
                 boolean empty = row.isEmpty();
                 removeFileContextMenu.setDisable(empty);
-                selectedFileIndex = (empty) ? null : row.getIndex();
                 // 在空白区域双击左键添加文件
                 if (row.isEmpty() && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                     addFile();
@@ -155,7 +147,6 @@ public final class AppController implements Initializable {
             row.setOnMouseClicked(event -> {
                 boolean empty = row.isEmpty();
                 removeRuleContextMenu.setDisable(empty);
-                selectedRuleIndex = (empty) ? null : row.getIndex();
 
                 if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
                     if (empty) {
@@ -179,8 +170,6 @@ public final class AppController implements Initializable {
         bindPropertyWithColumn(ruleTypeColumn, "type");
         bindPropertyWithColumn(ruleDescriptionColumn, "description");
     }
-
-    // TODO: 多重拖拽
 
     /**
      * 创建鼠标拖动事件
@@ -367,7 +356,7 @@ public final class AppController implements Initializable {
      * 每个{@code CheckBox}与对应记录的{@code selected}绑定在一起
      * @param column 选择列
      */
-    private static void bindSelectedBoxWithColumn(TableColumn<Wrapper, Boolean> column) {
+    private void bindSelectedBoxWithColumn(TableColumn<Wrapper, Boolean> column) {
         column.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean selected, boolean empty) {
@@ -380,6 +369,7 @@ public final class AppController implements Initializable {
                     var wrapper = getTableView().getItems().get(getIndex());
                     // 将CheckBox的selected与wrapper的selected双向绑定
                     box.selectedProperty().bindBidirectional(wrapper.isSelectedProperty());
+                    box.selectedProperty().addListener((observable, oldValue, newValue) -> preview());
                     setGraphic(box);
                 }
             }
@@ -785,38 +775,42 @@ public final class AppController implements Initializable {
      * @param rule {@code RuleEditor}窗口创建的{@code Rule}对象
      */
     private void addOrEditRule(Rule rule) {
-        if (selectedRuleIndex == null) {
+        if (ruleTable.getSelectionModel().isEmpty()) {
             ruleTable.getItems().add(new RuleWrapper(rule));
         } else {
-            ruleTable.getItems().set(selectedRuleIndex, new RuleWrapper(rule));
-            selectedRuleIndex = null;
+            ruleTable.getItems().set(ruleTable.getSelectionModel().getSelectedIndex(), new RuleWrapper(rule));
+            ruleTable.getSelectionModel().clearSelection();
         }
     }
 
     /* -- 清空/删除一个文件/规则处理函数 -- */
 
     @FXML private void removeFile() {
-        if (selectedFileIndex != null) {
-            fileTable.getItems().remove(selectedFileIndex.intValue());
-            selectedFileIndex = null;
+        if (!fileTable.getSelectionModel().isEmpty()) {
+            ArrayList<Integer> selectedFiles = new ArrayList<>(fileTable.getSelectionModel().getSelectedIndices());
+            for (int i = selectedFiles.size() - 1; i >= 0; --i) {
+                fileTable.getItems().remove(selectedFiles.get(i).intValue());
+            }
+            fileTable.getSelectionModel().clearSelection();
         }
     }
 
     @FXML private void clearFiles() {
         fileTable.getItems().clear();
-        selectedFileIndex = null;
     }
 
     @FXML private void removeRule() {
-        if (selectedRuleIndex != null) {
-            ruleTable.getItems().remove(selectedRuleIndex.intValue());
-            selectedRuleIndex = null;
+        if (!ruleTable.getSelectionModel().isEmpty()) {
+            ArrayList<Integer> selectedRules = new ArrayList<>(ruleTable.getSelectionModel().getSelectedIndices());
+            for (int i = selectedRules.size() - 1; i >= 0; --i) {
+                ruleTable.getItems().remove(selectedRules.get(i).intValue());
+            }
+            ruleTable.getSelectionModel().clearSelection();
         }
     }
 
     @FXML private void clearRules() {
         ruleTable.getItems().clear();
-        selectedRuleIndex = null;
     }
 
     /* -- 文件和规则菜单中(取消)选中全部处理函数 -- */
@@ -831,10 +825,12 @@ public final class AppController implements Initializable {
 
     @FXML private void selectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::select);
+        ruleTable.refresh();
     }
 
     @FXML private void unselectAllRules() {
         ruleTable.getItems().forEach(RuleWrapper::unselect);
+        ruleTable.refresh();
     }
 
     /* -- 分栏子菜单中添加/去除分栏处理函数 -- */

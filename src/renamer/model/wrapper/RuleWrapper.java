@@ -9,12 +9,11 @@
 
 package renamer.model.wrapper;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import renamer.model.rule.Rule;
 
 import java.io.*;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * 存储在{@code ruleTable}中的规则对象
@@ -24,7 +23,7 @@ public final class RuleWrapper implements Wrapper, Serializable {
     // 包装的规则模型
     private Rule rule;
     // 是否被选中
-    private boolean selected;
+    private transient BooleanProperty selected = new SimpleBooleanProperty();
 
     /* -- 规则包装器的构造器 -- */
 
@@ -35,22 +34,22 @@ public final class RuleWrapper implements Wrapper, Serializable {
 
     @Override
     public void select() {
-        selected = true;
+        selected.setValue(true);
     }
 
     @Override
     public void unselect() {
-        selected = false;
+        selected.setValue(false);
     }
 
     @Override
     public BooleanProperty isSelectedProperty() {
-        return new SimpleBooleanProperty(selected);
+        return selected;
     }
 
     @Override
     public boolean isSelected() {
-        return selected;
+        return selected.get();
     }
 
     /* -- 封装Rule的方法和属性 -- */
@@ -73,5 +72,15 @@ public final class RuleWrapper implements Wrapper, Serializable {
 
     public String exec(FileWrapper file, int index) {
         return rule.exec(file, index);
+    }
+
+    private void writeOject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(selected.get());
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        selected = new SimpleBooleanProperty((boolean) in.readObject());
     }
 }
