@@ -1,5 +1,5 @@
 /*
- * @author Zx55
+ * @author Zx55, mcy
  * @project Renamer
  * @file AppController.java
  * @date 2019/5/28 19:26
@@ -74,9 +74,12 @@ public final class AppController implements Initializable {
     private Integer selectedRuleIndex;
     private Integer selectedFileIndex;
 
+    /* -- 鼠标拖动事件 -- */
     // 对象序列化格式
     private static final DataFormat SERIALIZED_MIME_TYPE =
             new DataFormat("application/x-java-serialized-object");
+    // 选中的行对应的对象集合
+    private static ArrayList<Wrapper> selections = new ArrayList<>();
 
     /**
      * 初始化{@code App}界面
@@ -110,6 +113,8 @@ public final class AppController implements Initializable {
      * 添加鼠标事件
      */
     private void bindFileTableColumn() {
+        // 多选模式
+        fileTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         fileTable.setRowFactory(table -> {
             TableRow<FileWrapper> row = new TableRow<>();
             // 鼠标点击TableRow
@@ -124,7 +129,7 @@ public final class AppController implements Initializable {
             });
             row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
             row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropTable(row, event));
+            row.setOnDragDropped(event -> dragDropOnTable(row, event));
 
             return row;
         });
@@ -142,6 +147,8 @@ public final class AppController implements Initializable {
      * 添加鼠标事件
      */
     private void bindRuleTableColumn() {
+        // 多选模式
+        ruleTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         ruleTable.setRowFactory(table -> {
             TableRow<RuleWrapper> row = new TableRow<>();
             // 鼠标点击TableRow
@@ -162,7 +169,7 @@ public final class AppController implements Initializable {
             });
             row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
             row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropTable(row, event));
+            row.setOnDragDropped(event -> dragDropOnTable(row, event));
 
             return row;
         });
@@ -176,16 +183,24 @@ public final class AppController implements Initializable {
     // TODO: 多重拖拽
 
     /**
-     * 鼠标开始拖动一个{@code TableRow}
+     * 创建鼠标拖动事件
      * @param row 鼠标拖动的{@code TableRow}
      * @param event 鼠标事件
      * @param <T> {@code TableRow}中存储的对象类型
      */
     private <T> void dragDetectedOnTable(TableRow<T> row, MouseEvent event) {
         if (!row.isEmpty()) {
+            // 获取选中的对象并加入selections
+            ObservableList<T> selectedItems = row.getTableView().getSelectionModel().getSelectedItems();
+            selections.clear();
+            for (T item : selectedItems) {
+                selections.add((Wrapper) item);
+            }
+
+            // 创建拖动事件 记录拖动的行索引
             Dragboard board = row.startDragAndDrop(TransferMode.MOVE);
-            ClipboardContent content = new ClipboardContent();
             board.setDragView(row.snapshot(null, null));
+            ClipboardContent content = new ClipboardContent();
             content.put(SERIALIZED_MIME_TYPE, new Pair<>(row.getTableView().getId(), row.getIndex()));
             board.setContent(content);
             event.consume();
@@ -193,7 +208,7 @@ public final class AppController implements Initializable {
     }
 
     /**
-     * 鼠标将对象拖动到一个{@code TableRow}对象上方
+     * 将对象拖动到另一个{@code TableRow}上方
      * @param row 拖动到的{@code TableRow}
      * @param event 拖动事件
      * @param <T> {@code TableRow}中存储的对象类型
@@ -202,10 +217,10 @@ public final class AppController implements Initializable {
         Dragboard board = event.getDragboard();
 
         if (board.hasContent(SERIALIZED_MIME_TYPE)) {
-            // 拖拽同一个表格的行改变顺序
             @SuppressWarnings("unchecked")
             var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
-            if (row.getIndex() != content.getValue()) {
+            // 只能拖动到同一表格的不同行上
+            if (row.getIndex() != content.getValue() && row.getTableView().getId().equals(content.getKey())) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 event.consume();
             }
@@ -217,27 +232,24 @@ public final class AppController implements Initializable {
     }
 
     /**
-     * 鼠标将{@code TableRow}对象放下
+     * 鼠标将拖拽对象放下
+     * 结束拖拽事件
      * @param row 鼠标放下的{@code TableRow}
      * @param event 拖动事件
      * @param <T> {@code TableRow}中存储的对象类型
      */
-    private <T> void dragDropTable(TableRow<T> row, DragEvent event) {
+    private <T> void dragDropOnTable(TableRow<T> row, DragEvent event) {
         Dragboard board = event.getDragboard();
         TableView<T> table = row.getTableView();
 
         if (board.hasContent(SERIALIZED_MIME_TYPE)) {
-            // 拖拽同一个表格的行改变顺序
-            @SuppressWarnings("unchecked")
-            var content = (Pair<String, Integer>) board.getContent(SERIALIZED_MIME_TYPE);
-            if (content.getKey().equals(table.getId())) {
-                int dragIndex = content.getValue();
-                T wrapper = table.getItems().remove(dragIndex);
-                int dropIndex = row.isEmpty() ? table.getItems().size() : row.getIndex();
-                table.getItems().add(dropIndex, wrapper);
-                table.getSelectionModel().select(dropIndex);
-                event.setDropCompleted(true);
+            if (row.isEmpty()) {
+                dragDropOnLast(table);
+            } else {
+                dragDropOnRow(row);
             }
+            event.setDropCompleted(true);
+            selections.clear();
         } else if (board.hasFiles()) {
             // 从外部拖拽文件(夹)
             dragFileDropFromOutside(board);
@@ -246,6 +258,79 @@ public final class AppController implements Initializable {
             event.setDropCompleted(false);
         }
         event.consume();
+    }
+
+    /**
+     * 鼠标将拖拽对象放到空行上
+     * 将对象移动到列表最后
+     * @param table 拖拽对象所在的{@code TableView}
+     * @param <T> {@code TableView}中存储的对象类型
+     */
+    private <T> void dragDropOnLast(TableView<T> table) {
+        int dropIndex = table.getItems().size();
+        removeSelectionsFromTable(table);
+        table.getSelectionModel().clearSelection();
+        addSelectionToTable(table, dropIndex);
+    }
+
+    /**
+     * 鼠标将拖拽对象放到非空行上
+     * @param row 拖动到的{@code TableRow}
+     * @param <T> {@code TableRow}中存储的对象类型
+     */
+    private <T> void dragDropOnRow(TableRow<T> row) {
+        TableView<T> table = row.getTableView();
+        int dropIndex = row.getIndex();
+        T dropItem = row.getItem();
+        int delta = 0;
+
+        while (selections.contains(dropItem)) {
+            delta = 1;
+            if (--dropIndex < 0) {
+                // 放下的行上方都被选中 将对象移动到表格头部
+                dragDropOnFirst(table);
+                return;
+            }
+            dropItem = table.getItems().get(dropIndex);
+        }
+
+        removeSelectionsFromTable(table);
+        table.getSelectionModel().clearSelection();
+        dropIndex = table.getItems().indexOf(dropItem) + delta;
+        addSelectionToTable(table, dropIndex);
+    }
+
+    /**
+     * 鼠标将拖拽对象放到{@code TableView}最上方
+     */
+    private <T> void dragDropOnFirst(TableView<T> table) {
+        removeSelectionsFromTable(table);
+        table.getSelectionModel().clearSelection();
+        addSelectionToTable(table, 0);
+    }
+
+    /**
+     * 将选中的{@code Wrapper}对象从{@code TableView}中移除
+     */
+    private <T> void removeSelectionsFromTable(TableView<T> table) {
+        for (Wrapper item : selections) {
+            @SuppressWarnings("unchecked")
+            T removeItem = (T) item;
+            table.getItems().remove(removeItem);
+        }
+    }
+
+    /**
+     * 将选中的{@code Wrapper}对象添加到{@code TableView}中的指定位置
+     */
+    private <T> void addSelectionToTable(TableView<T> table, int dropIndex) {
+        for (Wrapper item : selections) {
+            @SuppressWarnings("unchecked")
+            T addItem = (T) item;
+            table.getItems().add(dropIndex, addItem);
+            table.getSelectionModel().select(dropIndex);
+            ++dropIndex;
+        }
     }
 
     /**

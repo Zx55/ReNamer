@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * 管理预设工具类
+ */
 public final class Preset {
     /**
      * 将{@code RuleWrapper}列表保存为预设文件

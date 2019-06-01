@@ -119,8 +119,8 @@
             <TableColumn id="tableNoCol" fx:id="fileNoColumn" prefWidth="30.0"/>
             <TableColumn fx:id="fileSelectedColumn" prefWidth="23.0" text="√"/>
             <TableColumn fx:id="fileSourceNameColumn" prefWidth="160.0" text="文件名"/>
-            <TableColumn fx:id="filePreviewNameColumn" prefWidth="160.0" text="新名称"/>
-            <TableColumn fx:id="fileErrorColumn" prefWidth="100.0" text="错误信息"/>
+            <TableColumn fx:id="filePreviewNameColumn" prefWidth="179.0" text="新名称"/>
+            <TableColumn fx:id="fileErrorColumn" prefWidth="107.0" text="错误信息"/>
         </columns>
         <contextMenu>
             <ContextMenu>
