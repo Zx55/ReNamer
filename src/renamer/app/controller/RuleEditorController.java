@@ -160,15 +160,19 @@ public final class RuleEditorController implements Initializable {
             // 插入规则UI关联激活
             case 0:
                 insertRulePosition.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-                    insertRuleIndex.setDisable(!getToggleText(newValue).equals("位置"));
-                    insertRuleDirection.setDisable(!getToggleText(newValue).equals("位置"));
-                }); 
+                    if (newValue != null) {
+                        insertRuleIndex.setDisable(!getToggleText(newValue).equals("位置"));
+                        insertRuleDirection.setDisable(!getToggleText(newValue).equals("位置"));
+                    }
+                });
                 break;
             // 删除规则UI关联激活
             case 1:
                 deleteRulePosition.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-                    deleteRuleCount.setDisable(!getToggleText(newValue).equals("计数"));
-                    deleteRuleEnd.setDisable(!getToggleText(newValue).equals("位置"));
+                    if (newValue != null) {
+                        deleteRuleCount.setDisable(!getToggleText(newValue).equals("计数"));
+                        deleteRuleEnd.setDisable(!getToggleText(newValue).equals("位置"));
+                    }
                 });
                 deleteRuleAll.selectedProperty().addListener((observable, oldValue, newValue) -> {
                     deleteRuleBeg.setDisable(newValue);
@@ -183,16 +187,21 @@ public final class RuleEditorController implements Initializable {
                 serializeRuleReset.selectedProperty().addListener((observable, oldValue, newValue) ->
                         serializeRuleResetValue.setDisable(!newValue));
                 serializeRulePosition.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-                    serializeRuleIndex.setDisable(!getToggleText(newValue).equals("位置"));
-                    serializeRuleDirection.setDisable(!getToggleText(newValue).equals("位置"));
+                    if (newValue != null) {
+                        serializeRuleIndex.setDisable(!getToggleText(newValue).equals("位置"));
+                        serializeRuleDirection.setDisable(!getToggleText(newValue).equals("位置"));
+                    }
                 });
                 serializeRulePadding.selectedProperty().addListener((observable, oldValue, newValue) ->
                         serializeRuleLength.setDisable(!newValue));
                 break;
             // 大小写规则UI关联激活
             case 8:
-                caseRuleMode.selectedToggleProperty().addListener((observable, oldValue, newValue) ->
-                        caseRuleDelimiter.setDisable(!getToggleText(newValue).equals("分隔符隔开的每个单词首字母大写")));
+                caseRuleMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        caseRuleDelimiter.setDisable(!getToggleText(newValue).equals("分隔符隔开的每个单词首字母大写"));
+                    }
+                });
                 break;
         }
     }

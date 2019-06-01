@@ -133,4 +133,15 @@ public final class FileWrapper implements Wrapper {
     public String getModifiedTime() {
         return file.getModifiedTime();
     }
+
+    /**
+     * 使用{@code preview}重命名
+     */
+    public boolean rename() {
+        if (!preview.equals("")) {
+            return file.renameTo(preview);
+        } else {
+            return true;
+        }
+    }
 }

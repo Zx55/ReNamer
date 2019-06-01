@@ -26,7 +26,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.input.MouseButton;
+import javafx.scene.paint.Color;
 import javafx.stage.*;
 import javafx.util.Pair;
 
@@ -118,7 +118,7 @@ public final class AppController implements Initializable {
         bindNoWithColumn(fileNoColumn);
         bindSelectedBoxWithColumn(fileSelectedColumn);
         bindPropertyWithColumn(fileSourceNameColumn, "fileName");
-        bindPropertyWithColumn(filePreviewNameColumn, "preview");
+        bindPreviewWithColumn(filePreviewNameColumn);
         bindPropertyWithColumn(fileErrorColumn, "error");
     }
 
@@ -273,15 +273,46 @@ public final class AppController implements Initializable {
             @Override
             protected void updateItem(Boolean selected, boolean empty) {
                 super.updateItem(selected, empty);
-                this.setText(null);
-                this.setGraphic(null);
+                setText(null);
+                setGraphic(null);
 
                 if (!empty) {
                     CheckBox box = new CheckBox();
                     var wrapper = getTableView().getItems().get(getIndex());
                     // 将CheckBox的selected与wrapper的selected双向绑定
                     box.selectedProperty().bindBidirectional(wrapper.isSelectedProperty());
-                    this.setGraphic(box);
+                    setGraphic(box);
+                }
+            }
+        });
+    }
+
+    /**
+     * 将{@code preview}与预览列绑定在一起
+     * 根据{@code Config}中的设置设定文字
+     * @param column 预览列
+     */
+    private static void bindPreviewWithColumn(TableColumn<FileWrapper, String> column) {
+        column.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String preview, boolean empty) {
+                super.updateItem(preview, empty);
+                setText(null);
+                setGraphic(null);
+
+                if (!empty) {
+                    FileWrapper file = column.getTableView().getItems().get(getIndex());
+                    setText(file.getPreview());
+                    // 高亮预览
+                    try {
+                        if (Config.getConfig().getBoolean("highlightChangedFiles")
+                                && !file.getFileName().equals(file.getPreview())) {
+                            Color color = Color.web(Config.getConfig().get("highlightColor"));
+                            setTextFill(color);
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -408,9 +439,11 @@ public final class AppController implements Initializable {
 
             try {
                 // 添加文件后自动预览
-                if (!ruleTable.getItems().isEmpty() && change.wasAdded()
-                        && Config.getConfig().getBoolean("autoPreviewWhenFilesAdded")) {
-                    preview();
+                while (change.next()) {
+                    if (!ruleTable.getItems().isEmpty() && change.wasAdded()
+                            && Config.getConfig().getBoolean("autoPreviewWhenFilesAdded")) {
+                        preview();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -441,8 +474,12 @@ public final class AppController implements Initializable {
         });
     }
 
+    /**
+     * 对{@code fileTable}中的文件用多线程执行{@code ruleTable}中的规则
+     */
     @FXML private void preview() {
         var files = fileTable.getItems();
+        int index = 0;
 
         // 清空上一次的规则执行
         for (var file : files) {
@@ -451,18 +488,90 @@ public final class AppController implements Initializable {
             }
         }
 
-        // TODO: 多线程
-        for (int i = 0; i < files.size(); ++i) {
-            var file = files.get(i);
+        for (var file : files) {
             if (!file.isSelected()) {
+                file.setPreview("");
                 continue;
             }
 
-            for (var rule : ruleTable.getItems()) {
-                if (rule.isSelected()) {
-                    file.setPreview(rule.exec(file, i));
+            // 将index作为final整型传给新线程
+            final int previewIndex = index;
+            new Thread(() -> previewEachFile(file, previewIndex)).start();
+            ++index;
+        }
+
+        fileTable.refresh();
+    }
+
+    /**
+     * 创建新线程对一个文件执行规则
+     * @param file 文件
+     * @param index 文件所在的索引
+     */
+    private synchronized void previewEachFile(FileWrapper file, int index) {
+        for (var rule : ruleTable.getItems()) {
+            if (rule.isSelected()) {
+                file.setPreview(rule.exec(file, index));
+            }
+        }
+    }
+
+    /**
+     * 对每个选中的{@code FileWrapper}进行重命名
+     */
+    @FXML private void rename() {
+        var files = fileTable.getItems();
+        StringBuilder builder = new StringBuilder();
+        int fileCount = 0;
+        int errorCount = 0;
+        Config config = Config.getConfig();
+
+        // 执行规则
+        preview();
+
+        for (var file : files) {
+            if (file.isSelected()) {
+                ++fileCount;
+                if (file.rename()) {
+                    file.setPreview("");
+                } else {
+                    if (++errorCount > 5) {
+                        builder.append("\n").append(file.getFileName());
+                    }
                 }
             }
+        }
+
+        try {
+            // 重命名后提示信息
+            if (config.getBoolean("displayMsgAfterRename")) {
+                if (errorCount == 0) {
+                    Util.showAlert(Alert.AlertType.INFORMATION, "Success", String.format("%d个文件重命名成功", fileCount));
+                } else {
+                    String error = String.format("重命名成功: [%d/%d]\n失败:", errorCount, fileCount)
+                            + builder.toString() + ((errorCount > 5) ? "\n..." : "");
+                    Util.showAlert(Alert.AlertType.ERROR, "Error", error);
+                }
+            }
+            // 重命名后退出程序
+            if (config.getBoolean("exitAfterRename")) {
+                Stage app = (Stage) appRoot.getScene().getWindow();
+                app.close();
+            }
+            // 重命名后清空规则容器
+            if (config.getBoolean("clearRulesAfterRename")) {
+                ruleTable.getItems().clear();
+            }
+            // 重命名后清空文件容器
+            if (config.getBoolean("clearFilesAfterRename")) {
+                fileTable.getItems().clear();
+            }
+            // 重命名后清除已重命名的文件
+            if (config.getBoolean("clearRenamedFilesAfterRename")) {
+                files.removeIf(FileWrapper::isModified);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         fileTable.refresh();
@@ -695,7 +804,7 @@ public final class AppController implements Initializable {
     }
 
     /**
-     * 打开配置编辑器
+     * 打开{@code ConfigEditor}
      */
     @FXML private void showConfigEditor() {
         try {
@@ -706,8 +815,10 @@ public final class AppController implements Initializable {
             configEditor.setScene(new Scene(root, 400, 600));
             configEditor.setResizable(false);
             configEditor.initModality(Modality.APPLICATION_MODAL);
+            // 关闭配置编辑器后刷新高亮颜色
+            configEditor.setOnHidden(event -> fileTable.refresh());
 
-            configEditor.show();
+            configEditor.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -112,6 +112,7 @@ public final class FileModel {
      * @param newName 新的文件名
      * @return 重命名是否成功
      */
+    // FIXME: 重命名后文件冲突
     public boolean renameTo(String newName) {
         String newFilePath = getParentDirectoryPath() + '\\' + newName;
 

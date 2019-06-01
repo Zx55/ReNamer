@@ -55,7 +55,7 @@
             <MenuItem mnemonicParsing="false" onAction="#unselectAllRules" text="取消选择全部"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" onAction="#preview" text="预览"/>
-            <MenuItem mnemonicParsing="false" text="重命名"/>
+            <MenuItem mnemonicParsing="false" onAction="#rename" text="重命名"/>
         </Menu>
         <Menu mnemonicParsing="false" text="预设">
             <MenuItem mnemonicParsing="false" text="Action 1"/>
@@ -76,8 +76,8 @@
             prefHeight="40.0" prefWidth="100.0" text="添加文件夹"/>
     <Button id="toolBarButton" layoutX="215.0" layoutY="35.0" mnemonicParsing="false" onAction="#addRule"
             prefHeight="40.0" prefWidth="100.0" text="添加规则"/>
-    <Button id="toolBarButton" layoutX="395.0" layoutY="35.0" mnemonicParsing="false" prefHeight="40.0"
-            prefWidth="100.0" text="重命名"/>
+    <Button id="toolBarButton" layoutX="395.0" layoutY="35.0" mnemonicParsing="false" onAction="#rename"
+            prefHeight="40.0" prefWidth="100.0" text="重命名"/>
     <TableView fx:id="ruleTable" layoutY="80.0" onMouseClicked="#onMouseClickRuleTable" prefHeight="270.0"
                prefWidth="500.0">
         <placeholder>
