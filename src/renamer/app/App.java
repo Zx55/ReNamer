@@ -9,12 +9,13 @@
 
 package renamer.app;
 
+import renamer.app.controller.AppController;
+import renamer.config.Config;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import renamer.config.Config;
 
 /**
  * 程序主体窗口
@@ -34,6 +35,15 @@ public final class App extends Application {
         primaryStage.setScene(app);
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(event -> {
+            try {
+                // 退出时保存规则集
+                if (Config.getConfig().getBoolean("saveRulesOnExitLoadOnStartup")) {
+                    loader.<AppController>getController().saveRulesOnExit();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // 退出时保存配置
             Config.getConfig().dumpConfig();
             System.exit(0);
         });

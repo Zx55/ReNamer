@@ -14,6 +14,8 @@ import renamer.model.rule.Rule;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 序列化规则
  *
@@ -31,11 +33,11 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public final class SerializeRule implements Rule {
+public final class SerializeRule implements Rule, Serializable {
     /**
      * 序列化增量
      */
-    private class Increment {
+    private class Increment implements Serializable {
         // 起始值
         int begIndex;
         // 步长

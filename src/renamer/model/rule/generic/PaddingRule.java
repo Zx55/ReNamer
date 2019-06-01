@@ -15,6 +15,8 @@ import renamer.model.rule.position.Direction;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 填充规则
  * 当文件名长度不满足{@code paddingLength}时，在{@code position}位置填充{@code paddingCharacter}使满足长度
@@ -31,7 +33,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public final class PaddingRule implements Rule {
+public final class PaddingRule implements Rule, Serializable {
     // 填充字符
     private String paddingCharacter;
     // 填充模式

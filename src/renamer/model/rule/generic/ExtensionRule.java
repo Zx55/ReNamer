@@ -13,6 +13,8 @@ import renamer.model.rule.Rule;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 扩展名规则
  * 修改或者添加文件扩展名
@@ -28,7 +30,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public final class ExtensionRule implements Rule {
+public final class ExtensionRule implements Rule, Serializable {
     // 新扩展名
     private String newExtension;
     // 是否添加到文件名最后

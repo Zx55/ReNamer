@@ -14,11 +14,13 @@ import renamer.model.rule.flag.CaseFlag;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 大小写规则
  * 将文件名根据{@code flag}转换大小写
  */
-public final class CaseRule implements Rule {
+public final class CaseRule implements Rule, Serializable {
     // 大小写模式
     private CaseFlag flag;
     // 分隔符，仅在CASE_CAPITALIZE_WITH_DELIMITER下有效

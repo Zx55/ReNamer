@@ -9,10 +9,11 @@
 
 package renamer.model.wrapper;
 
-import javafx.beans.property.*;
 import renamer.model.file.*;
 
 import java.io.File;
+
+import javafx.beans.property.*;
 
 /**
  * 存储在{@code fileTable}中的文件对象
@@ -64,6 +65,28 @@ public final class FileWrapper implements Wrapper {
         return selected.get();
     }
 
+    /* -- 对规则执行后的预览进行操作 -- */
+
+    public String getPreview() {
+        return preview;
+    }
+
+    public void setPreview(String preview) {
+        if (!preview.equals("")) {
+            this.preview = preview;
+            String[] splits = preview.split("\\.");
+            previewWithoutExtension = splits.length == 1 ? splits[0] :
+                    preview.substring(0, preview.length() - (1 + splits[splits.length - 1].length()));
+        } else {
+            this.preview = "";
+            previewWithoutExtension = "";
+        }
+    }
+
+    public String getPreviewWithoutExtension() {
+        return previewWithoutExtension;
+    }
+
     /* -- 封装FileModel的方法和属性 -- */
 
     FileModel getFile() {
@@ -84,26 +107,6 @@ public final class FileWrapper implements Wrapper {
 
     public String getExtension() {
         return file.getExtension();
-    }
-
-    public String getPreview() {
-        return preview;
-    }
-
-    public void setPreview(String preview) {
-        if (!preview.equals("")) {
-            this.preview = preview;
-            String[] splits = preview.split("\\.");
-            previewWithoutExtension = splits.length == 1 ? splits[0] :
-                    preview.substring(0, preview.length() - (1 + splits[splits.length - 1].length()));
-        } else {
-            this.preview = "";
-            previewWithoutExtension = "";
-        }
-    }
-
-    public String getPreviewWithoutExtension() {
-        return previewWithoutExtension;
     }
 
     public String getError() {

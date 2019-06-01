@@ -12,11 +12,13 @@ package renamer.model.rule.position;
 import renamer.model.rule.Position;
 import renamer.model.rule.flag.DeleteFlag;
 
+import java.io.Serializable;
+
 /**
  * 删除规则影响的位置
  * 删除[beg, end)位置的字符
  */
-public final class DeletePosition implements Position {
+public final class DeletePosition implements Position, Serializable {
     // 要修改的文件名长度
     private int length;
     // 删除模式

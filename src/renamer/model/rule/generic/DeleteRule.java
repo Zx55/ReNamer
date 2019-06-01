@@ -13,6 +13,8 @@ import renamer.model.rule.*;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 删除规则
  * 删除文件名中{@code position}影响范围内的字符
@@ -30,7 +32,7 @@ import renamer.util.Util;
  *     }
  * }</pre>
  */
-public final class DeleteRule implements Rule {
+public final class DeleteRule implements Rule, Serializable {
     // 删除字符串的位置
     private Position position;
     // 忽略扩展名标志位

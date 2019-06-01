@@ -13,6 +13,8 @@ import renamer.model.rule.*;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
+
 /**
  * 插入规则
  * 在文件名中{@code position}位置插入指定字符串
@@ -32,7 +34,7 @@ import renamer.util.Util;
  * }</pre>
  *
  */
-public final class InsertRule implements Rule {
+public final class InsertRule implements Rule, Serializable {
     // 插入字符串模式
     private String pattern;
     // 插入字符串位置

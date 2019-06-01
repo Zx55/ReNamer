@@ -13,6 +13,7 @@ import renamer.config.Config;
 import renamer.model.file.*;
 import renamer.model.rule.Rule;
 import renamer.model.wrapper.*;
+import renamer.preset.Preset;
 import renamer.util.Util;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.net.URL;
 import java.util.*;
 
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -88,6 +90,18 @@ public final class AppController implements Initializable {
         bindRuleTableColumn();
         onFileTableChange();
         onRuleTableChange();
+
+        // 下次打开时重新载入
+        try {
+            if (Config.getConfig().getBoolean("saveRulesOnExitLoadOnStartup")) {
+                ObservableList<RuleWrapper> ruleList = Preset.loadPreset(new File(".//src//renamer//preset//tmp.rnp"));
+                if (ruleList != null) {
+                    ruleTable.getItems().addAll(ruleList);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -829,5 +843,79 @@ public final class AppController implements Initializable {
      */
     @FXML private void resetConfig() {
         Config.getConfig().initialize();
+    }
+
+    /**
+     * 将{@code ruleTable}中的{@code RuleWrapper}保存为一个.rnp文件
+     */
+    @FXML private void savePreset() {
+        var ruleList = ruleTable.getItems();
+
+        if (!ruleList.isEmpty()) {
+            FileChooser chooser = new FileChooser();
+
+            chooser.setTitle("保存预设");
+            chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            // 添加扩展名
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("配置文件", "*.rnp"));
+
+            File file = chooser.showSaveDialog(appRoot.getScene().getWindow());
+            if (file != null) {
+                Preset.dumpPreset(file, ruleTable.getItems());
+            }
+        } else {
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "当前没有规则");
+        }
+    }
+
+    /**
+     * 将当前{@code ruleTable}清空并添加预设
+     */
+    @FXML private void loadPresetClear() {
+        ObservableList<RuleWrapper> ruleList = loadPreset();
+        if (ruleList != null) {
+            ruleTable.getItems().clear();
+            ruleTable.getItems().addAll(ruleList);
+        } else {
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "读取预设失败");
+        }
+    }
+
+    /**
+     * 将预设添加到{@code ruleTable}最后
+     */
+    @FXML private void loadPresetAppend() {
+        ObservableList<RuleWrapper> ruleList = loadPreset();
+        if (ruleList != null) {
+            ruleTable.getItems().addAll(ruleList);
+        } else {
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "读取预设失败");
+        }
+    }
+
+    /**
+     * 读取一个.rnp文件
+     * @return 文件保存的 {@code RuleWrapper}
+     */
+    private ObservableList<RuleWrapper> loadPreset() {
+        FileChooser chooser = new FileChooser();
+
+        chooser.setTitle("读取预设");
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("配置文件", "*.rnp"));
+
+        File file = chooser.showOpenDialog(appRoot.getScene().getWindow());
+        return file != null ? Preset.loadPreset(file) : null;
+    }
+
+    /**
+     * 提供给{@code App}接口使得退出时保存
+     */
+    public void saveRulesOnExit() {
+        var ruleList = ruleTable.getItems();
+
+        if (!ruleList.isEmpty()) {
+            Preset.dumpPreset(new File(".//src//renamer//preset//tmp.rnp"), ruleTable.getItems());
+        }
     }
 }

@@ -58,7 +58,9 @@
             <MenuItem mnemonicParsing="false" onAction="#rename" text="重命名"/>
         </Menu>
         <Menu mnemonicParsing="false" text="预设">
-            <MenuItem mnemonicParsing="false" text="Action 1"/>
+            <MenuItem mnemonicParsing="false" onAction="#savePreset" text="保存预设"/>
+            <MenuItem mnemonicParsing="false" onAction="#loadPresetClear" text="读取预设(清空)"/>
+            <MenuItem mnemonicParsing="false" onAction="#loadPresetAppend" text="读取预设(添加到最后)"/>
         </Menu>
         <Menu mnemonicParsing="false" text="设置">
             <MenuItem mnemonicParsing="false" onAction="#showConfigEditor" text="选项"/>

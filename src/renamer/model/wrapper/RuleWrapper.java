@@ -9,18 +9,22 @@
 
 package renamer.model.wrapper;
 
-import javafx.beans.property.*;
 import renamer.model.rule.Rule;
+
+import java.io.*;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * 存储在{@code ruleTable}中的规则对象
  * 包装了{@code Rule}和一些相关属性
  */
-public final class RuleWrapper implements Wrapper {
+public final class RuleWrapper implements Wrapper, Serializable {
     // 包装的规则模型
     private Rule rule;
     // 是否被选中
-    private BooleanProperty selected = new SimpleBooleanProperty();
+    private boolean selected;
 
     /* -- 规则包装器的构造器 -- */
 
@@ -31,22 +35,22 @@ public final class RuleWrapper implements Wrapper {
 
     @Override
     public void select() {
-        selected.setValue(true);
+        selected = true;
     }
 
     @Override
     public void unselect() {
-        selected.setValue(false);
+        selected = false;
     }
 
     @Override
     public BooleanProperty isSelectedProperty() {
-        return selected;
+        return new SimpleBooleanProperty(selected);
     }
 
     @Override
     public boolean isSelected() {
-        return selected.get();
+        return selected;
     }
 
     /* -- 封装Rule的方法和属性 -- */

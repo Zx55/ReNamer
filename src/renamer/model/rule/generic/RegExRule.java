@@ -14,6 +14,7 @@ import renamer.model.rule.flag.ReplaceFlag;
 import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
+import java.io.Serializable;
 import java.util.regex.*;
 
 import javafx.scene.control.Alert;
@@ -36,7 +37,7 @@ import javafx.scene.control.Alert;
  * }</pre>
  */
 // FIXME: \\存在bug
-public class RegExRule implements Rule {
+public class RegExRule implements Rule, Serializable {
     // 被替换字符串
     private String targetPattern;
     // 替换字符串

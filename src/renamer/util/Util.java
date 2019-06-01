@@ -9,14 +9,14 @@
 
 package renamer.util;
 
-import javafx.scene.control.Alert;
 import renamer.config.*;
-import renamer.model.file.FileModel;
 import renamer.model.wrapper.FileWrapper;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import javafx.scene.control.Alert;
 
 /**
  * 通用工具方法
@@ -121,13 +121,13 @@ public final class Util {
      * 弹出弹窗，直到关闭前程序挂起
      * @param type 弹窗类型
      * @param title 弹窗标题
-     * @param context 弹窗内容
+     * @param content 弹窗内容
      */
-    public static void showAlert(Alert.AlertType type, String title, String context) {
+    public static void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(context);
+        alert.setContentText(content);
         alert.showAndWait();
     }
 }

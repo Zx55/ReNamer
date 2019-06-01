@@ -12,6 +12,8 @@ package renamer.model.rule.position;
 import renamer.model.rule.Position;
 import renamer.model.rule.flag.InsertFlag;
 
+import java.io.Serializable;
+
 /**
  * 插入规则影响的范围
  * 从beg位置开始插入
@@ -20,7 +22,7 @@ import renamer.model.rule.flag.InsertFlag;
  *  test.txt忽略扩展名从左到右在位置2插入abc => tabcest.txt
  *  test.txt不忽略扩展名从右到做在位置2插入abc => test.txabct
  */
-public final class InsertPosition implements Position {
+public final class InsertPosition implements Position, Serializable {
     // 要修改的文件名长度
     private int length;
     // 插入模式
