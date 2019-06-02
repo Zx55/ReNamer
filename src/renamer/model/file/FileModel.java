@@ -32,8 +32,6 @@ public final class FileModel {
     private String createdTime;
     // 文件修改时间
     private String lastModifiedTime;
-    // 文件是否已经被修改
-    private boolean isModified;
 
     /* -- FileModel的构造方法 -- */
 
@@ -46,7 +44,6 @@ public final class FileModel {
         file = new File(filePath);
 
         if (file.exists() && file.isFile()) {
-            isModified = false;
             setAttr();
             setExtension();
             setCreatedTime();
@@ -103,10 +100,6 @@ public final class FileModel {
         return lastModifiedTime;
     }
 
-    public boolean isModified() {
-        return isModified;
-    }
-
     /**
      * 对文件进行重命名并将修改前的文件名以及扩展名保存下来
      * @param newName 新的文件名
@@ -116,7 +109,6 @@ public final class FileModel {
     public boolean renameTo(String newName) {
         String newFilePath = getParentDirectoryPath() + '\\' + newName;
 
-        isModified = true;
         if (file.renameTo(new File(newFilePath))) {
             file = new File(newFilePath);
             setAttr();

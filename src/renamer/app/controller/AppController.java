@@ -619,15 +619,13 @@ public final class AppController implements Initializable {
         preview();
 
         for (var file : files) {
-            if (file.isSelected()) {
-                ++fileCount;
-                if (file.rename()) {
-                    file.setPreview("");
-                } else {
-                    if (++errorCount > 5) {
-                        builder.append("\n").append(file.getFileName());
-                    }
-                }
+            if (!file.isSelected()) {
+                continue;
+            }
+
+            ++fileCount;
+            if (!file.rename() && ++errorCount <= 5) {
+                builder.append("\n").append(file.getFileName());
             }
         }
 
@@ -635,9 +633,10 @@ public final class AppController implements Initializable {
             // 重命名后提示信息
             if (config.getBoolean("displayMsgAfterRename")) {
                 if (errorCount == 0) {
-                    Util.showAlert(Alert.AlertType.INFORMATION, "Success", String.format("%d个文件重命名成功", fileCount));
+                    Util.showAlert(Alert.AlertType.INFORMATION, "Success",
+                            String.format("重命名成功: [%d/%d]", fileCount, fileCount));
                 } else {
-                    String error = String.format("重命名成功: [%d/%d]\n失败:", errorCount, fileCount)
+                    String error = String.format("重命名成功: [%d/%d]\n失败:", fileCount - errorCount, fileCount)
                             + builder.toString() + ((errorCount > 5) ? "\n..." : "");
                     Util.showAlert(Alert.AlertType.ERROR, "Error", error);
                 }
@@ -664,6 +663,41 @@ public final class AppController implements Initializable {
         }
 
         fileTable.refresh();
+    }
+
+    @FXML private void undoRename() {
+        var files = fileTable.getItems();
+        StringBuilder builder = new StringBuilder();
+        int fileCount = 0;
+        int errorCount = 0;
+
+        for (var file : files) {
+            if (!file.isSelected()) {
+                continue;
+            }
+
+            ++fileCount;
+            if (!file.undoRename() && ++errorCount <= 5) {
+                builder.append("\n").append(file.getFileName());
+            }
+        }
+
+        try {
+            if (Config.getConfig().getBoolean("displayMsgAfterRename")) {
+                if (errorCount == 0) {
+                    Util.showAlert(Alert.AlertType.INFORMATION, "成功",
+                            String.format("撤销重命名成功: [%d/%d]", fileCount, fileCount));
+                } else {
+                    String error = String.format("撤销重命名成功: [%d/%d]\n失败:", fileCount - errorCount, fileCount)
+                            + builder.toString() + ((errorCount > 5) ? "\n..." : "");
+                    Util.showAlert(Alert.AlertType.ERROR, "Error", error);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        preview();
     }
 
     /**
@@ -726,7 +760,7 @@ public final class AppController implements Initializable {
         }
         // 错误信息弹窗
         if (errorCount > 0) {
-            String error = String.format("以下文件打开失败: [%d/%d]", errorCount, filesCount)
+            String error = String.format("文件打开成功: [%d/%d]\n失败:", filesCount - errorCount, filesCount)
                     + builder.toString() + ((errorCount > 5) ? "\n..." : "");
             Util.showAlert(Alert.AlertType.ERROR, "Error", error);
         }

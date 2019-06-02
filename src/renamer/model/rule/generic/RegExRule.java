@@ -36,11 +36,10 @@ import javafx.scene.control.Alert;
  *     }
  * }</pre>
  */
-// FIXME: \\存在bug
 public class RegExRule implements Rule, Serializable {
-    // 被替换字符串
+    // 匹配正则表达式
     private String targetPattern;
-    // 替换字符串
+    // 替换正则表达式
     private String replacePattern;
     // 替换模式
     private ReplaceFlag flag;
@@ -124,13 +123,13 @@ public class RegExRule implements Rule, Serializable {
     }
 
     /**
-     * 去除{@code replacePattern}中的捕获组和反向引用
+     * 转义{@code replacePattern}中的捕获组和反向引用
      * 子类{@code ReplaceRule}不支持捕获组和反向引用
      */
-    void removeGroupAndBackReference() {
-        targetPattern = targetPattern.replaceAll("(\\()", "\\$1")
-                .replaceAll("(\\))", "\\$1");
-        replacePattern = replacePattern.replaceAll("(\\$\\d)", "\\\\$1");
+    void escapeGroupAndBackReference() {
+        targetPattern = targetPattern.replaceAll("\\(", "\\\\\\(")
+                .replaceAll("\\)", "\\\\\\)");
+        replacePattern = replacePattern.replaceAll("\\$", "\\\\\\$");
     }
 
     /**
@@ -153,9 +152,6 @@ public class RegExRule implements Rule, Serializable {
      * @return {@code Pattern}对象
      */
     protected Pattern getPatternByFlag() {
-        // 将'\'替换为'\\'
-        targetPattern = targetPattern.replaceAll("\\\\", "\\\\\\\\");
-
         if (caseSensitive) {
             return Pattern.compile(targetPattern);
         } else {
@@ -184,4 +180,8 @@ public class RegExRule implements Rule, Serializable {
         return buffer.toString();
     }
 
+    public static void main(String[] args) {
+        String s = "a$1b";
+        System.out.println(s.replaceAll("\\$1", "3334"));
+    }
 }

@@ -324,7 +324,7 @@ public final class RuleEditorController implements Initializable {
             case 4:
                 RemoveRule removeRule = (RemoveRule) srcRule;
 
-                removeRulePattern.setText(removeRule.getTargetPattern());
+                removeRulePattern.setText(removeRule.getOriginTargetPattern());
                 removeRuleIgnore.setSelected(removeRule.isIgnoreExtension());
                 removeRuleCase.setSelected(removeRule.isCaseSensitive());
                 removeRuleWhole.setSelected(removeRule.isWholeWordOnly());
@@ -340,8 +340,8 @@ public final class RuleEditorController implements Initializable {
             case 5:
                 ReplaceRule replaceRule = (ReplaceRule) srcRule;
 
-                replaceRuleFind.setText(replaceRule.getTargetPattern());
-                replaceRuleReplace.setText(replaceRule.getReplacePattern());
+                replaceRuleFind.setText(replaceRule.getOriginTargetPattern());
+                replaceRuleReplace.setText(replaceRule.getOriginReplacePattern());
                 replaceRuleIgnore.setSelected(replaceRule.isIgnoreExtension());
                 replaceRuleCase.setSelected(replaceRule.isCaseSensitive());
                 replaceRuleWhole.setSelected(replaceRule.isWholeWordOnly());

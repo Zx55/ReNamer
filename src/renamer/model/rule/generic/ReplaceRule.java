@@ -37,6 +37,9 @@ import java.util.regex.*;
  * }</pre>
  */
 public class ReplaceRule extends RegExRule {
+    // 转义前的匹配字符串和替换字符串
+    private String originTargetPattern;
+    private String originReplacePattern;
     // 是否全字匹配
     private boolean wholeWordOnly;
 
@@ -45,8 +48,10 @@ public class ReplaceRule extends RegExRule {
     public ReplaceRule(String targetPattern, String replacePattern, ReplaceFlag flag,
                        boolean caseSensitive, boolean wholeWordOnly, boolean ignoreExtension) {
         super(targetPattern, replacePattern, flag, caseSensitive, ignoreExtension);
+        originTargetPattern = targetPattern;
+        originReplacePattern = replacePattern;
         // 去除replacePattern中的反向引用(如果存在)
-        removeGroupAndBackReference();
+        escapeGroupAndBackReference();
         this.wholeWordOnly = wholeWordOnly;
     }
 
@@ -62,13 +67,23 @@ public class ReplaceRule extends RegExRule {
 
     @Override
     public String getDescription() {
-        return super.getDescription() + ((wholeWordOnly) ? "(全字匹配)" : "");
+        return "替换" + getFlagDescription() + "\"" + originTargetPattern + "\"为\"" + originReplacePattern
+                + "\"" + ((isCaseSensitive()) ? "(区分大小写)" : "") + ((isIgnoreExtension()) ? "(忽略扩展名)" : "")
+                + ((wholeWordOnly) ? "(全字匹配)" : "");
     }
 
     /* -- 访问属性 -- */
 
     public boolean isWholeWordOnly() {
         return wholeWordOnly;
+    }
+
+    public String getOriginTargetPattern() {
+        return originTargetPattern;
+    }
+
+    public String getOriginReplacePattern() {
+        return originReplacePattern;
     }
 
     @Override

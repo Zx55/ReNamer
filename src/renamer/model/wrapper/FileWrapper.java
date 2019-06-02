@@ -30,6 +30,10 @@ public final class FileWrapper implements Wrapper {
     private String error;
     // 是否被选中
     private BooleanProperty selected = new SimpleBooleanProperty();
+    // 文件名是否被修改
+    private BooleanProperty modified = new SimpleBooleanProperty();
+    // 重命名成功之前的名字
+    private String oldName;
 
     /* -- 文件包装器的构造器 -- */
 
@@ -39,6 +43,8 @@ public final class FileWrapper implements Wrapper {
         previewWithoutExtension = "";
         error = "";
         select();
+        modified.set(false);
+        oldName = null;
     }
 
     public FileWrapper(File file) throws InvalidFileModelException {
@@ -94,7 +100,11 @@ public final class FileWrapper implements Wrapper {
     }
 
     public boolean isModified() {
-        return file.isModified();
+        return modified.get();
+    }
+
+    public BooleanProperty isModifiedProperty() {
+        return modified;
     }
 
     public String getFileName() {
@@ -142,7 +152,21 @@ public final class FileWrapper implements Wrapper {
      */
     public boolean rename() {
         if (!preview.equals("")) {
-            return file.renameTo(preview);
+            oldName = file.getFileName();
+            modified.set(file.renameTo(preview));
+            oldName = modified.get() ? oldName : null;
+            preview = modified.get() ? "" : preview;
+            return modified.get();
+        } else {
+            return true;
+        }
+    }
+
+    public boolean undoRename() {
+        if (isModified()) {
+            modified.set(!file.renameTo(oldName));
+            oldName = modified.get() ? oldName : null;
+            return !modified.get();
         } else {
             return true;
         }

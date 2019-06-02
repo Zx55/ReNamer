@@ -56,6 +56,7 @@
             <SeparatorMenuItem mnemonicParsing="false"/>
             <MenuItem mnemonicParsing="false" onAction="#preview" text="预览"/>
             <MenuItem mnemonicParsing="false" onAction="#rename" text="重命名"/>
+            <MenuItem mnemonicParsing="false" onAction="#undoRename" text="撤销重命名"/>
         </Menu>
         <Menu mnemonicParsing="false" text="预设">
             <MenuItem mnemonicParsing="false" onAction="#savePreset" text="保存预设"/>

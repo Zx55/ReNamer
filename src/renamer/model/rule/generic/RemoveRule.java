@@ -52,7 +52,7 @@ public final class RemoveRule extends ReplaceRule {
 
     @Override
     public String getDescription() {
-        return "移除" + getFlagDescription() + "\"" + getTargetPattern() + "\"" +
+        return "移除" + getFlagDescription() + "\"" + getOriginTargetPattern() + "\"" +
                 ((isCaseSensitive()) ? "(区分大小写)" : "") + ((isWholeWordOnly()) ? "(全字匹配)" : "") +
                 ((isIgnoreExtension()) ? "(忽略扩展名)" : "");
     }
