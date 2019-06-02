@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+import javafx.application.HostServices;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.*;
@@ -75,6 +76,9 @@ public final class AppController implements Initializable {
             new DataFormat("application/x-java-serialized-object");
     // 选中的行对应的对象集合
     private static ArrayList<Wrapper> selections = new ArrayList<>();
+
+    //
+    private HostServices services;
 
     /**
      * 初始化{@code App}界面
@@ -1031,5 +1035,24 @@ public final class AppController implements Initializable {
         if (!ruleList.isEmpty()) {
             Preset.dumpPreset(new File(Config.getTmpPresetFile()), ruleTable.getItems());
         }
+    }
+
+    /**
+     * 提供给{@code App}的接口设置{@code HostServices}
+     * @param services 整个{@code App}的网络服务
+     */
+    public void setHostServices(HostServices services) {
+        this.services = services;
+    }
+
+    @FXML private void showUserManual() {
+
+    }
+
+    /**
+     * 检查更新
+     */
+    @FXML private void checkUpdate() {
+        services.showDocument("https://github.com/Zx55/ReNamer/releases");
     }
 }

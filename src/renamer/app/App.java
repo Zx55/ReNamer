@@ -30,15 +30,17 @@ public final class App extends Application {
         FXMLLoader loader = new FXMLLoader(Config.getLayout("App.fxml"));
         Scene app = new Scene(loader.load(), 500, 700);
         app.getStylesheets().add(Config.getStyle("App.css").toExternalForm());
+        primaryStage.setScene(app);
+        AppController controller = loader.getController();
 
         primaryStage.setTitle("ReNamer");
-        primaryStage.setScene(app);
         primaryStage.setResizable(false);
+        controller.setHostServices(getHostServices());
         primaryStage.setOnCloseRequest(event -> {
             try {
                 // 退出时保存规则集
                 if (Config.getConfig().getBoolean("saveRulesOnExitLoadOnStartup")) {
-                    loader.<AppController>getController().saveRulesOnExit();
+                    controller.saveRulesOnExit();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

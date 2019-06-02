@@ -69,7 +69,7 @@
         </Menu>
         <Menu mnemonicParsing="false" text="帮助">
             <MenuItem mnemonicParsing="false" text="用户手册"/>
-            <MenuItem mnemonicParsing="false" text="检查更新"/>
+            <MenuItem mnemonicParsing="false" onAction="#checkUpdate" text="检查更新"/>
             <MenuItem mnemonicParsing="false" text="关于"/>
         </Menu>
     </MenuBar>
