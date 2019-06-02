@@ -27,6 +27,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ * 规则编辑{@code RuleEditor}的控制类
+ */
 public final class RuleEditorController implements Initializable {
     /* -- FXML组件 -- */
     @FXML private AnchorPane ruleEditorRoot;

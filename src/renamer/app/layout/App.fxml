@@ -68,9 +68,9 @@
             <MenuItem mnemonicParsing="false" onAction="#resetConfig" text="恢复默认"/>
         </Menu>
         <Menu mnemonicParsing="false" text="帮助">
-            <MenuItem mnemonicParsing="false" text="用户手册"/>
+            <MenuItem mnemonicParsing="false" onAction="#showUserManual" text="用户手册"/>
             <MenuItem mnemonicParsing="false" onAction="#checkUpdate" text="检查更新"/>
-            <MenuItem mnemonicParsing="false" text="关于"/>
+            <MenuItem mnemonicParsing="false" onAction="#aboutUs" text="关于"/>
         </Menu>
     </MenuBar>
     <Button id="toolBarButton" layoutX="5.0" layoutY="35.0" mnemonicParsing="false" onAction="#addFile"

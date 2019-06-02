@@ -245,4 +245,12 @@ public final class Config {
     public static URL getStyle(String stylesheet) {
         return App.class.getResource("style/" + stylesheet);
     }
+
+    public static URL getImage(String image) {
+        return App.class.getResource("img/" + image);
+    }
+
+    public static String getVersion() {
+        return "Version  0.1.0-alpha";
+    }
 }

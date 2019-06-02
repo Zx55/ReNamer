@@ -77,7 +77,7 @@ public final class AppController implements Initializable {
     // 选中的行对应的对象集合
     private static ArrayList<Wrapper> selections = new ArrayList<>();
 
-    //
+    // App的网络服务
     private HostServices services;
 
     /**
@@ -943,8 +943,8 @@ public final class AppController implements Initializable {
             Stage configEditor = new Stage();
             Parent root = FXMLLoader.load(Config.getLayout("ConfigEditor.fxml"));
 
-            configEditor.setTitle("设置");
             configEditor.setScene(new Scene(root, 400, 600));
+            configEditor.setTitle("设置");
             configEditor.setResizable(false);
             configEditor.initModality(Modality.APPLICATION_MODAL);
             // 关闭配置编辑器后刷新高亮颜色
@@ -1045,8 +1045,11 @@ public final class AppController implements Initializable {
         this.services = services;
     }
 
+    /**
+     * 显示用户手册
+     */
     @FXML private void showUserManual() {
-
+        services.showDocument("https://github.com/Zx55/ReNamer/blob/master/doc/user-manual.md");
     }
 
     /**
@@ -1054,5 +1057,25 @@ public final class AppController implements Initializable {
      */
     @FXML private void checkUpdate() {
         services.showDocument("https://github.com/Zx55/ReNamer/releases");
+    }
+
+    /**
+     * 关于我们页面
+     */
+    @FXML private void aboutUs() {
+        try {
+            Stage aboutUsPage = new Stage();
+            FXMLLoader loader = new FXMLLoader(Config.getLayout("AboutUs.fxml"));
+            aboutUsPage.setScene(new Scene(loader.load(), 400, 360));
+            loader.<AboutUsController>getController().setHostServices(services);
+
+            aboutUsPage.setTitle("关于我们");
+            aboutUsPage.setResizable(false);
+            aboutUsPage.initModality(Modality.APPLICATION_MODAL);
+
+            aboutUsPage.showAndWait();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
