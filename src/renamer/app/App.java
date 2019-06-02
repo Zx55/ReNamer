@@ -27,9 +27,9 @@ public final class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("layout/App.fxml"));
+        FXMLLoader loader = new FXMLLoader(Config.getLayout("App.fxml"));
         Scene app = new Scene(loader.load(), 500, 700);
-        app.getStylesheets().add(getClass().getResource("style/App.css").toExternalForm());
+        app.getStylesheets().add(Config.getStyle("App.css").toExternalForm());
 
         primaryStage.setTitle("ReNamer");
         primaryStage.setScene(app);

@@ -33,7 +33,7 @@ import javafx.stage.*;
 import javafx.util.Pair;
 
 /**
- * 主体窗口布局{@code ../layout/App.fxml}对应的控制对象
+ * 主体窗口{@code App}对应的控制对象
  */
 public final class AppController implements Initializable {
     /* FXML组件 */
@@ -747,9 +747,8 @@ public final class AppController implements Initializable {
         try {
             Stage ruleEditor = new Stage();
             // 创建新规则默认载入插入规则的布局文件，编辑规则根据选中规则的类型载入布局文件
-            String resourcePath = "../layout/" + RuleEditorController
-                    .getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
+            String layoutPath = RuleEditorController.getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
+            FXMLLoader loader = new FXMLLoader(Config.getLayout(layoutPath));
             ruleEditor.setScene(new Scene(loader.load(), 600, 385));
             // 向规则编辑器传入要编辑的规则并记录该controller
             RuleEditorController controller = loader.getController();
@@ -904,7 +903,7 @@ public final class AppController implements Initializable {
     @FXML private void showConfigEditor() {
         try {
             Stage configEditor = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("../layout/ConfigEditor.fxml"));
+            Parent root = FXMLLoader.load(Config.getLayout("ConfigEditor.fxml"));
 
             configEditor.setTitle("设置");
             configEditor.setScene(new Scene(root, 400, 600));
@@ -996,7 +995,7 @@ public final class AppController implements Initializable {
         var ruleList = ruleTable.getItems();
 
         if (!ruleList.isEmpty()) {
-            Preset.dumpPreset(new File(".//src//renamer//preset//tmp.rnp"), ruleTable.getItems());
+            Preset.dumpPreset(new File(Config.getTmpPresetFile()), ruleTable.getItems());
         }
     }
 }

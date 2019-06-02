@@ -130,4 +130,12 @@ public final class Util {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+    /**
+     * 判断是否运行在jar包中
+     * @return {@code true}当运行在jar包中，否则返回{@code false}
+     */
+    public static boolean isStartupFromJar() {
+        return Config.class.getResource("").getProtocol().equals("jar");
+    }
 }

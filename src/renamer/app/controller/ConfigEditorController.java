@@ -23,7 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
- * 设置编辑器窗口布局{@code ../layout/ConfigEditor.fxml}对应的控制对象
+ * 设置编辑器窗口{@code ConfigEditor}对应的控制对象
  */
 public final class ConfigEditorController implements Initializable {
     /* -- FXML组件 -- */

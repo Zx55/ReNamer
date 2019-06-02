@@ -9,8 +9,12 @@
 
 package renamer.config;
 
-import javafx.scene.control.Alert;
+import renamer.app.App;
 import renamer.util.Util;
+
+import java.net.URL;
+
+import javafx.scene.control.Alert;
 
 /**
  * 全局的配置选项
@@ -20,8 +24,6 @@ import renamer.util.Util;
 public final class Config {
     // 单例模式中的唯一实例对象
     private static Config config = new Config();
-    // 设定文件的位置
-    private String configFilePath = ".\\src\\renamer\\config\\config";
 
     // 全局设定
     // 退出时保存规则集，下次打开时重新载入
@@ -66,7 +68,7 @@ public final class Config {
      * 从配置文件中读取并生成{@code Config}类，若文件不存在或者解析错误采用默认配置
      */
     private Config() {
-        String data = Util.loadData(configFilePath);
+        String data = Util.loadData(getConfigFile());
 
         if (data == null) {
             // 设定文件为空时，创建一个默认Config类
@@ -103,9 +105,9 @@ public final class Config {
             }
             builder.delete(builder.length() - 1, builder.length());
 
-            Util.dumpData(configFilePath, builder.toString());
+            Util.dumpData(getConfigFile(), builder.toString());
         } catch (Exception e) {
-            Util.dumpData(configFilePath, "");
+            Util.dumpData(getConfigFile(), "");
         }
     }
 
@@ -212,5 +214,35 @@ public final class Config {
             default:
                 throw new StringToBooleanParseException();
         }
+    }
+
+    /**
+     * @return 配置文件位置，jar包和class文件中位置不同
+     */
+    private static String getConfigFile() {
+        return Util.isStartupFromJar() ? "config/config" : "src/renamer/config/config";
+    }
+
+    /**
+     * @return 退出时保存的规则集位置
+     */
+    public static String getTmpPresetFile() {
+        return Util.isStartupFromJar() ? "preset/tmp.rnp" : "src/renamer/preset/tmp.rnp";
+    }
+
+    /**
+     * Jar包和文件结构不同，因此无法像文件一样访问上级目录
+     * 但是可以访问子目录
+     * 这里直接从{@code App}类向下获取资源文件
+     *
+     * @param layout 资源文件名
+     * @return 对应的 {@code URL}位置
+     */
+    public static URL getLayout(String layout) {
+        return App.class.getResource("layout/" + layout);
+    }
+
+    public static URL getStyle(String stylesheet) {
+        return App.class.getResource("style/" + stylesheet);
     }
 }
