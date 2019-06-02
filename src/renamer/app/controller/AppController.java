@@ -783,7 +783,7 @@ public final class AppController implements Initializable {
         }
     }
 
-    /* -- 清空/删除一个文件/规则处理函数 -- */
+    /* -- 清空/删除选中的文件/规则处理函数 -- */
 
     @FXML private void removeFile() {
         if (!fileTable.getSelectionModel().isEmpty()) {

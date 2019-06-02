@@ -74,13 +74,13 @@ public final class RuleWrapper implements Wrapper, Serializable {
         return rule.exec(file, index);
     }
 
-    private void writeOject(ObjectOutputStream out) throws IOException {
+    private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
-        out.writeObject(selected.get());
+        out.writeObject(selected.getValue());
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        selected = new SimpleBooleanProperty((boolean) in.readObject());
+        selected = new SimpleBooleanProperty((Boolean) in.readObject());
     }
 }
