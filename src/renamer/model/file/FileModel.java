@@ -9,6 +9,7 @@
 
 package renamer.model.file;
 
+import renamer.model.wrapper.FileWrapper;
 import renamer.util.Util;
 
 import java.io.*;
@@ -105,19 +106,18 @@ public final class FileModel {
      * @param newName 新的文件名
      * @return 重命名是否成功
      */
-    // FIXME: 重命名后文件冲突
     public boolean renameTo(String newName) {
-        String newFilePath = getParentDirectoryPath() + '\\' + newName;
+        File renamedFile = new File(getParentDirectoryPath() + '\\' + newName);
 
-        if (file.renameTo(new File(newFilePath))) {
-            file = new File(newFilePath);
+        if (!renamedFile.exists() && file.renameTo(renamedFile)) {
+            file = renamedFile;
             setAttr();
             setExtension();
             setCreatedTime();
             setLastModifiedTime();
-
             return true;
         }
+
         return false;
     }
 

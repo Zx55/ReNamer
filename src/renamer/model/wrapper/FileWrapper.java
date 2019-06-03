@@ -31,7 +31,7 @@ public final class FileWrapper implements Wrapper {
     // 是否被选中
     private BooleanProperty selected = new SimpleBooleanProperty();
     // 文件名是否被修改
-    private BooleanProperty modified = new SimpleBooleanProperty();
+    private boolean modified;
     // 重命名成功之前的名字
     private String oldName;
 
@@ -43,7 +43,7 @@ public final class FileWrapper implements Wrapper {
         previewWithoutExtension = "";
         error = "";
         select();
-        modified.set(false);
+        modified = false;
         oldName = null;
     }
 
@@ -71,6 +71,22 @@ public final class FileWrapper implements Wrapper {
         return selected.get();
     }
 
+    public boolean isModified() {
+        return modified;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public boolean isError() {
+        return !error.equals("");
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
     /* -- 对规则执行后的预览进行操作 -- */
 
     public String getPreview() {
@@ -93,18 +109,14 @@ public final class FileWrapper implements Wrapper {
         return previewWithoutExtension;
     }
 
+    public String getAbsolutePreview() {
+        return getParent() + "\\" + getPreview();
+    }
+
     /* -- 封装FileModel的方法和属性 -- */
 
     FileModel getFile() {
         return file;
-    }
-
-    public boolean isModified() {
-        return modified.get();
-    }
-
-    public BooleanProperty isModifiedProperty() {
-        return modified;
     }
 
     public String getFileName() {
@@ -117,10 +129,6 @@ public final class FileWrapper implements Wrapper {
 
     public String getExtension() {
         return file.getExtension();
-    }
-
-    public String getError() {
-        return error;
     }
 
     public String getParent() {
@@ -153,10 +161,10 @@ public final class FileWrapper implements Wrapper {
     public boolean rename() {
         if (!preview.equals("")) {
             oldName = file.getFileName();
-            modified.set(file.renameTo(preview));
-            oldName = modified.get() ? oldName : null;
-            preview = modified.get() ? "" : preview;
-            return modified.get();
+            modified = file.renameTo(preview);
+            oldName = modified ? oldName : null;
+            preview = modified ? "" : preview;
+            return modified;
         } else {
             return true;
         }
@@ -164,9 +172,9 @@ public final class FileWrapper implements Wrapper {
 
     public boolean undoRename() {
         if (isModified()) {
-            modified.set(!file.renameTo(oldName));
-            oldName = modified.get() ? oldName : null;
-            return !modified.get();
+            modified = !file.renameTo(oldName);
+            oldName = modified ? oldName : null;
+            return !modified;
         } else {
             return true;
         }

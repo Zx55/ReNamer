@@ -19,6 +19,7 @@ import renamer.util.Util;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 import javafx.application.HostServices;
 import javafx.collections.ListChangeListener;
@@ -617,42 +618,82 @@ public final class AppController implements Initializable {
      */
     @FXML private void preview() {
         var files = fileTable.getItems();
+        var rules = ruleTable.getItems();
+        if (files.isEmpty() || rules.isEmpty()) {
+            return;
+        }
+
+        // 文件在列表中的位置
         int index = 0;
+        // 启动的线程数
+        int count = 0;
 
         // 清空上一次的规则执行
         for (var file : files) {
-            if (file.isSelected()) {
-                file.setPreview("");
-            }
+            file.setPreview("");
+            file.setError("");
+            count = file.isSelected() ? count + 1 : count;
         }
 
+        final CountDownLatch latch = new CountDownLatch(count);
         for (var file : files) {
+            // 跳过未选择的文件
             if (!file.isSelected()) {
-                file.setPreview("");
                 continue;
             }
-
             // 将index作为final整型传给新线程
             final int previewIndex = index;
-            new Thread(() -> previewEachFile(file, previewIndex)).start();
+            // 多线程对每个文件执行规则
+            new Thread(() -> {
+                // 添加文件锁，防止一个文件同时被多个文件命名
+                synchronized (file) {
+                    rules.filtered(RuleWrapper::isSelected).forEach((rule) ->
+                            file.setPreview(rule.exec(file, previewIndex)));
+
+                    // 文件名与其他文件冲突
+                    if (!file.getPreview().equals(file.getFileName())) {
+                        File previewFile = new File(file.getParent() + "\\" + file.getPreview());
+                        if (previewFile.exists()) {
+                            file.setError("文件名冲突");
+                        }
+                    }
+                    // 线程执行完毕，计数器减一
+                    latch.countDown();
+                }
+            }).start();
+
             ++index;
         }
 
+        // 等待所有线程都执行完毕后，才刷新文件表格
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        checkRepeatPreview();
         fileTable.refresh();
     }
 
     /**
-     * 创建新线程对一个文件执行规则
-     * @param file 文件
-     * @param index 文件所在的索引
+     * 检查执行后是否存在相同的文件名
      */
-    private synchronized void previewEachFile(FileWrapper file, int index) {
-        for (var rule : ruleTable.getItems()) {
-            if (rule.isSelected()) {
-                file.setPreview(rule.exec(file, index));
+    private void checkRepeatPreview() {
+        var files = fileTable.getItems();
+        HashMap<String, Integer> repeat = new HashMap<>();
+
+        for (int i = 0; i < files.size(); ++i) {
+            String path = files.get(i).getAbsolutePreview();
+            if (repeat.containsKey(path)) {
+                files.get(repeat.get(path)).setError("文件名冲突");
+                files.get(i).setError("文件名冲突");
+            } else {
+                repeat.put(path, i);
             }
         }
     }
+
 
     /**
      * 对每个选中的{@code FileWrapper}进行重命名
@@ -666,13 +707,15 @@ public final class AppController implements Initializable {
 
         // 执行规则
         preview();
-
         for (var file : files) {
-            if (!file.isSelected()) {
+            // 跳过所有未选中、存在错误、没有重命名的文件
+            if (!file.isSelected() || file.isError()
+                    || file.getPreview().equals(file.getFileName())) {
                 continue;
             }
 
             ++fileCount;
+            System.out.println(fileCount);
             if (!file.rename() && ++errorCount <= 5) {
                 builder.append("\n").append(file.getFileName());
             }
@@ -681,7 +724,9 @@ public final class AppController implements Initializable {
         try {
             // 重命名后提示信息
             if (config.getBoolean("displayMsgAfterRename")) {
-                if (errorCount == 0) {
+                if (fileCount == 0) {
+                    Util.showAlert(Alert.AlertType.INFORMATION, "Fail", "没有文件被重命名");
+                } else if (errorCount == 0) {
                     Util.showAlert(Alert.AlertType.INFORMATION, "Success",
                             String.format("重命名成功: [%d/%d]", fileCount, fileCount));
                 } else {
@@ -714,6 +759,10 @@ public final class AppController implements Initializable {
         fileTable.refresh();
     }
 
+    /**
+     * 撤销重命名
+     * 只能撤销一次
+     */
     @FXML private void undoRename() {
         var files = fileTable.getItems();
         StringBuilder builder = new StringBuilder();
@@ -721,7 +770,7 @@ public final class AppController implements Initializable {
         int errorCount = 0;
 
         for (var file : files) {
-            if (!file.isSelected()) {
+            if (!file.isSelected() || !file.isModified()) {
                 continue;
             }
 
@@ -733,8 +782,10 @@ public final class AppController implements Initializable {
 
         try {
             if (Config.getConfig().getBoolean("displayMsgAfterRename")) {
-                if (errorCount == 0) {
-                    Util.showAlert(Alert.AlertType.INFORMATION, "成功",
+                if (fileCount == 0) {
+                    Util.showAlert(Alert.AlertType.INFORMATION, "Fail", "没有文件被重命名");
+                } else if (errorCount == 0) {
+                    Util.showAlert(Alert.AlertType.INFORMATION, "Success",
                             String.format("撤销重命名成功: [%d/%d]", fileCount, fileCount));
                 } else {
                     String error = String.format("撤销重命名成功: [%d/%d]\n失败:", fileCount - errorCount, fileCount)
@@ -777,7 +828,7 @@ public final class AppController implements Initializable {
         DirectoryChooser chooser = new DirectoryChooser();
         StringBuilder builder = new StringBuilder();
         int errorCount = 0;
-        int filesCount = 0;
+        int fileCount = 0;
 
         chooser.setTitle("添加文件夹");
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -798,7 +849,7 @@ public final class AppController implements Initializable {
                 continue;
             }
 
-            ++filesCount;
+            ++fileCount;
             try {
                 fileTable.getItems().add(new FileWrapper(file));
             } catch (InvalidFileModelException e) {
@@ -808,8 +859,10 @@ public final class AppController implements Initializable {
             }
         }
         // 错误信息弹窗
-        if (errorCount > 0) {
-            String error = String.format("文件打开成功: [%d/%d]\n失败:", filesCount - errorCount, filesCount)
+        if (fileCount == 0) {
+            Util.showAlert(Alert.AlertType.INFORMATION, "Fail", "没有文件被添加");
+        } else if (errorCount > 0) {
+            String error = String.format("文件打开成功: [%d/%d]\n失败:", fileCount - errorCount, fileCount)
                     + builder.toString() + ((errorCount > 5) ? "\n..." : "");
             Util.showAlert(Alert.AlertType.ERROR, "Error", error);
         }

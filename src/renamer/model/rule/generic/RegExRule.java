@@ -78,7 +78,7 @@ public class RegExRule implements Rule, Serializable {
 
             return fileName + ((ignoreExtension) ? file.getExtension() : "");
         } catch (IndexOutOfBoundsException e) {
-            Util.showAlert(Alert.AlertType.ERROR, "Error", "反向引用超出范围");
+            Util.showAlert(Alert.AlertType.ERROR, "Error", "正则表达式反向引用超出范围");
             return file.getFileName();
         }
     }
