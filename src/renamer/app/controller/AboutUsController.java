@@ -9,14 +9,13 @@
 
 package renamer.app.controller;
 
-import javafx.application.HostServices;
 import renamer.config.Config;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.application.HostServices;
+import javafx.fxml.*;
 import javafx.scene.control.Label;
 
 /**

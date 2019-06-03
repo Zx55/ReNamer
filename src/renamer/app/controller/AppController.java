@@ -86,15 +86,16 @@ public final class AppController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        bindFileTableColumn();
-        bindRuleTableColumn();
+        initializeFileTable();
+        initializeRuleTable();
         onFileTableChange();
         onRuleTableChange();
 
         // 下次打开时重新载入
         try {
             if (Config.getConfig().getBoolean("saveRulesOnExitLoadOnStartup")) {
-                ObservableList<RuleWrapper> ruleList = Preset.loadPreset(new File(".//src//renamer//preset//tmp.rnp"));
+                ObservableList<RuleWrapper> ruleList = Preset
+                        .loadPreset(new File(".//src//renamer//preset//tmp.rnp"));
                 if (ruleList != null) {
                     ruleTable.getItems().addAll(ruleList);
                 }
@@ -109,26 +110,8 @@ public final class AppController implements Initializable {
      * 将每一列与{@code FileWrapper}对应属性绑定
      * 添加鼠标事件
      */
-    private void bindFileTableColumn() {
-        // 多选模式
-        fileTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        fileTable.setRowFactory(table -> {
-            TableRow<FileWrapper> row = new TableRow<>();
-            // 鼠标点击TableRow
-            row.setOnMouseClicked(event -> {
-                boolean empty = row.isEmpty();
-                removeFileContextMenu.setDisable(empty);
-                // 在空白区域双击左键添加文件
-                if (row.isEmpty() && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    addFile();
-                }
-            });
-            row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
-            row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropOnTable(row, event));
-
-            return row;
-        });
+    private void initializeFileTable() {
+        initializeTable(fileTable);
         // 绑定每一列的值
         bindNoWithColumn(fileNoColumn);
         bindSelectedBoxWithColumn(fileSelectedColumn);
@@ -142,37 +125,175 @@ public final class AppController implements Initializable {
      * 将每一列与{@code RuleWrapper}对应属性绑定
      * 添加鼠标事件
      */
-    private void bindRuleTableColumn() {
-        // 多选模式
-        ruleTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        ruleTable.setRowFactory(table -> {
-            TableRow<RuleWrapper> row = new TableRow<>();
-            // 鼠标点击TableRow
-            row.setOnMouseClicked(event -> {
-                boolean empty = row.isEmpty();
-                removeRuleContextMenu.setDisable(empty);
-
-                if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
-                    if (empty) {
-                        // 在空白区域双击左键添加规则
-                        addRule();
-                    } else {
-                        // 在已有规则上双击进行编辑
-                        editRule(row.getItem());
-                    }
-                }
-            });
-            row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
-            row.setOnDragOver(event -> dragOverTable(row, event));
-            row.setOnDragDropped(event -> dragDropOnTable(row, event));
-
-            return row;
-        });
+    private void initializeRuleTable() {
+        initializeTable(ruleTable);
         // 绑定每一列的值
         bindNoWithColumn(ruleNoColumn);
         bindSelectedBoxWithColumn(ruleSelectedColumn);
         bindPropertyWithColumn(ruleTypeColumn, "type");
         bindPropertyWithColumn(ruleDescriptionColumn, "description");
+    }
+
+    /**
+     * 初始化{@code TableView}
+     */
+    private <T> void initializeTable(TableView<T> table) {
+        // 多行选择
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // 初始化列表行
+        table.setRowFactory(t -> {
+            @SuppressWarnings("unchecked")
+            TableRow<T> row = (TableRow<T>) (table.getId().equals("fileTable") ?
+                    initializeFileRow() : initializeRuleRow());
+            return row;
+        });
+        // 键盘Delete触发事件
+        table.setOnKeyReleased(event -> keyDeleteReleased(table, event));
+    }
+
+    /**
+     * 将{@code TableView}的序号列与每条记录的索引绑定在一起
+     * @param column 序号列
+     */
+    private static <T> void bindNoWithColumn(TableColumn<T, String> column) {
+        column.setCellFactory((col) -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(null);
+                setGraphic(null);
+
+                if (!empty) {
+                    setText(String.valueOf(getIndex() + 1));
+                }
+            }
+        });
+    }
+
+    /**
+     * {@code TableView}的选择列显示一个{@code CheckBox}
+     * 每个{@code CheckBox}与对应记录的{@code selected}绑定在一起
+     * @param column 选择列
+     */
+    private void bindSelectedBoxWithColumn(TableColumn<Wrapper, Boolean> column) {
+        column.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean selected, boolean empty) {
+                super.updateItem(selected, empty);
+                setText(null);
+                setGraphic(null);
+
+                if (!empty) {
+                    CheckBox box = new CheckBox();
+                    var wrapper = getTableView().getItems().get(getIndex());
+                    // 将CheckBox的selected与wrapper的selected双向绑定
+                    box.selectedProperty().bindBidirectional(wrapper.isSelectedProperty());
+                    box.selectedProperty().addListener((observable, oldValue, newValue) -> preview());
+                    setGraphic(box);
+                }
+            }
+        });
+    }
+
+    /**
+     * 将{@code preview}与预览列绑定在一起
+     * 根据{@code Config}中的设置设定文字
+     * @param column 预览列
+     */
+    private static void bindPreviewWithColumn(TableColumn<FileWrapper, String> column) {
+        column.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String preview, boolean empty) {
+                super.updateItem(preview, empty);
+                setText(null);
+                setGraphic(null);
+
+                if (!empty) {
+                    FileWrapper file = column.getTableView().getItems().get(getIndex());
+                    setText(file.getPreview());
+                    // 高亮预览
+                    try {
+                        if (Config.getConfig().getBoolean("highlightChangedFiles")
+                                && !file.getFileName().equals(file.getPreview())) {
+                            Color color = Color.web(Config.getConfig().get("highlightColor"));
+                            setTextFill(color);
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * 初始化{@code fileTable}的{@code TableRow}
+     * @return 绑定完事件的 {@code fileTableRow}
+     */
+    private TableRow<FileWrapper> initializeFileRow() {
+        TableRow<FileWrapper> row = new TableRow<>();
+
+        // 鼠标点击TableRow
+        row.setOnMouseClicked(event -> {
+            boolean empty = row.isEmpty();
+            removeFileContextMenu.setDisable(empty);
+            // 在空白区域双击左键添加文件
+            if (row.isEmpty() && event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                addFile();
+            }
+        });
+        // 鼠标拖拽事件
+        row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
+        row.setOnDragOver(event -> dragOverTable(row, event));
+        row.setOnDragDropped(event -> dragDropOnTable(row, event));
+
+        return row;
+    }
+
+    /**
+     * 初始化{@code ruleTable}的{@code TableRow}
+     * @return 绑定完事件的 {@code ruleTableRow}
+     */
+    private TableRow<RuleWrapper> initializeRuleRow() {
+        TableRow<RuleWrapper> row = new TableRow<>();
+
+        // 鼠标点击TableRow
+        row.setOnMouseClicked(event -> {
+            boolean empty = row.isEmpty();
+            removeRuleContextMenu.setDisable(empty);
+
+            if (event.getClickCount() == 2 && event.getButton() == MouseButton.PRIMARY) {
+                if (empty) {
+                    // 在空白区域双击左键添加规则
+                    addRule();
+                } else {
+                    // 在已有规则上双击进行编辑
+                    editRule(row.getItem());
+                }
+            }
+        });
+        row.setOnDragDetected(event -> dragDetectedOnTable(row, event));
+        row.setOnDragOver(event -> dragOverTable(row, event));
+        row.setOnDragDropped(event -> dragDropOnTable(row, event));
+
+        return row;
+    }
+
+    /**
+     * 键盘输入DELETE事件
+     * @param table 输入所在的{@code TableView}
+     * @param event 键盘事件
+     */
+    private <T> void keyDeleteReleased(TableView<T> table, KeyEvent event) {
+        if (event.getCode() != KeyCode.DELETE) {
+            return;
+        }
+
+        if (table.getId().equals("fileTable")) {
+            removeFile();
+        } else {
+            removeRule();
+        }
     }
 
     /**
@@ -333,82 +454,6 @@ public final class AppController implements Initializable {
      */
     private static void bindPropertyWithColumn(TableColumn<?, ?> column, String key) {
         column.setCellValueFactory(new PropertyValueFactory<>(key));
-    }
-
-    /**
-     * 将{@code TableView}的序号列与每条记录的索引绑定在一起
-     * @param column 序号列
-     * @param <T>    {@code TableView}中每条记录显示的对象
-     */
-    private static <T> void bindNoWithColumn(TableColumn<T, String> column) {
-        column.setCellFactory((col) -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(null);
-                setGraphic(null);
-
-                if (!empty) {
-                    setText(String.valueOf(getIndex() + 1));
-                }
-            }
-        });
-    }
-
-    /**
-     * {@code TableView}的选择列显示一个{@code CheckBox}
-     * 每个{@code CheckBox}与对应记录的{@code selected}绑定在一起
-     * @param column 选择列
-     */
-    private void bindSelectedBoxWithColumn(TableColumn<Wrapper, Boolean> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(Boolean selected, boolean empty) {
-                super.updateItem(selected, empty);
-                setText(null);
-                setGraphic(null);
-
-                if (!empty) {
-                    CheckBox box = new CheckBox();
-                    var wrapper = getTableView().getItems().get(getIndex());
-                    // 将CheckBox的selected与wrapper的selected双向绑定
-                    box.selectedProperty().bindBidirectional(wrapper.isSelectedProperty());
-                    box.selectedProperty().addListener((observable, oldValue, newValue) -> preview());
-                    setGraphic(box);
-                }
-            }
-        });
-    }
-
-    /**
-     * 将{@code preview}与预览列绑定在一起
-     * 根据{@code Config}中的设置设定文字
-     * @param column 预览列
-     */
-    private static void bindPreviewWithColumn(TableColumn<FileWrapper, String> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String preview, boolean empty) {
-                super.updateItem(preview, empty);
-                setText(null);
-                setGraphic(null);
-
-                if (!empty) {
-                    FileWrapper file = column.getTableView().getItems().get(getIndex());
-                    setText(file.getPreview());
-                    // 高亮预览
-                    try {
-                        if (Config.getConfig().getBoolean("highlightChangedFiles")
-                                && !file.getFileName().equals(file.getPreview())) {
-                            Color color = Color.web(Config.getConfig().get("highlightColor"));
-                            setTextFill(color);
-                        }
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
     /**
@@ -787,10 +832,13 @@ public final class AppController implements Initializable {
             // 创建新规则默认载入插入规则的布局文件，编辑规则根据选中规则的类型载入布局文件
             String layoutPath = RuleEditorController.getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
             FXMLLoader loader = new FXMLLoader(Config.getLayout(layoutPath));
-            ruleEditor.setScene(new Scene(loader.load(), 600, 385));
+            Scene editorScene = new Scene(loader.load(), 600, 385);
+            ruleEditor.setScene(editorScene);
             // 向规则编辑器传入要编辑的规则并记录该controller
             RuleEditorController controller = loader.getController();
             controller.initRule(rule);
+            // 绑定键盘输入事件
+            editorScene.setOnKeyReleased(controller::bindKeyReleased);
 
             ruleEditor.setTitle("编辑规则");
             ruleEditor.setResizable(false);

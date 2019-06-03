@@ -24,6 +24,8 @@ import java.util.ResourceBundle;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -92,6 +94,8 @@ public final class RuleEditorController implements Initializable {
     @FXML private ToggleGroup caseRuleMode;
     @FXML private TextField caseRuleDelimiter;
     @FXML private CheckBox caseRuleIgnore;
+    // 确认保存按钮
+    @FXML private Button saveButton;
 
     /**
      * JavaFx中每一个{@code Scene}都对应一个{@code Controller}对象
@@ -137,6 +141,17 @@ public final class RuleEditorController implements Initializable {
         ruleTypeChoice.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) ->
                 switchRuleType(newValue.intValue()));
         activeControlsAssociation(ruleTypeChoice.getSelectionModel().getSelectedIndex());
+    }
+
+    /**
+     * 提供{@code AppController}接口来绑定{@code RuleEditor}键盘输入事件
+     * @param event 键盘输入事件
+     */
+    void bindKeyReleased(KeyEvent event) {
+        // Enter键保存并退出编辑器
+        if (event.getCode() == KeyCode.ENTER) {
+            saveButton.fire();
+        }
     }
 
     /**
@@ -647,7 +662,7 @@ public final class RuleEditorController implements Initializable {
     /**
      * 退出规则编辑器
      */
-    public void exitEditor() {
+    @FXML private void exitEditor() {
         Stage ruleEditor = (Stage) ruleEditorRoot.getScene().getWindow();
         ruleEditor.close();
     }

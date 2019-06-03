@@ -9,11 +9,12 @@
 
 package renamer.model.wrapper;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import renamer.model.rule.Rule;
 
 import java.io.*;
+
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * 存储在{@code ruleTable}中的规则对象
