@@ -160,9 +160,13 @@ public final class RuleEditorController implements Initializable {
      */
     private void switchRuleType(int index) {
         try {
-            Stage ruleEditor = (Stage) ruleEditorRoot.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(Config.getLayout(scenes[index]));
-            ruleEditor.setScene(new Scene(loader.load()));
+
+            Stage ruleEditorStage = (Stage) ruleEditorRoot.getScene().getWindow();
+            Scene ruleEditorScene = new Scene(loader.load());
+            ruleEditorScene.getStylesheets().add(Config.getStyle("RuleEditor.css").toExternalForm());
+            ruleEditorStage.setScene(ruleEditorScene);
+
             // 新Scene对应的Controller记录第一个Controller
             loader.<RuleEditorController>getController().setLink(link);
         } catch (IOException e) {

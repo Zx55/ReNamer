@@ -179,9 +179,4 @@ public class RegExRule implements Rule, Serializable {
 
         return buffer.toString();
     }
-
-    public static void main(String[] args) {
-        String s = "a$1b";
-        System.out.println(s.replaceAll("\\$1", "3334"));
-    }
 }

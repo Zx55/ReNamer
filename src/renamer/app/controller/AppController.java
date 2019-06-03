@@ -881,22 +881,26 @@ public final class AppController implements Initializable {
      */
     @FXML private void editRule(RuleWrapper rule) {
         try {
-            Stage ruleEditor = new Stage();
-            // 创建新规则默认载入插入规则的布局文件，编辑规则根据选中规则的类型载入布局文件
+            // 创建新规则默认载入插入规则的布局文件
+            // 编辑规则根据选中规则的类型载入布局文件
             String layoutPath = RuleEditorController.getScenes()[(rule == null) ? 0 : rule.getTypeIndex()];
             FXMLLoader loader = new FXMLLoader(Config.getLayout(layoutPath));
-            Scene editorScene = new Scene(loader.load(), 600, 385);
-            ruleEditor.setScene(editorScene);
+
+            Stage ruleEditorStage = new Stage();
+            Scene ruleEditorScene = new Scene(loader.load(), 600, 385);
+            ruleEditorScene.getStylesheets().add(Config.getStyle("RuleEditor.css").toExternalForm());
+            ruleEditorStage.setScene(ruleEditorScene);
+
             // 向规则编辑器传入要编辑的规则并记录该controller
             RuleEditorController controller = loader.getController();
             controller.initRule(rule);
             // 绑定键盘输入事件
-            editorScene.setOnKeyReleased(controller::bindKeyReleased);
+            ruleEditorScene.setOnKeyReleased(controller::bindKeyReleased);
 
-            ruleEditor.setTitle("编辑规则");
-            ruleEditor.setResizable(false);
-            ruleEditor.initModality(Modality.APPLICATION_MODAL);
-            ruleEditor.showAndWait();
+            ruleEditorStage.setTitle("编辑规则");
+            ruleEditorStage.setResizable(false);
+            ruleEditorStage.initModality(Modality.APPLICATION_MODAL);
+            ruleEditorStage.showAndWait();
 
             // 获取创建的规则
             Rule newRule = controller.getRetRule();
@@ -1041,17 +1045,20 @@ public final class AppController implements Initializable {
      */
     @FXML private void showConfigEditor() {
         try {
-            Stage configEditor = new Stage();
-            Parent root = FXMLLoader.load(Config.getLayout("ConfigEditor.fxml"));
+            FXMLLoader loader = new FXMLLoader(Config.getLayout("ConfigEditor.fxml"));
 
-            configEditor.setScene(new Scene(root, 400, 600));
-            configEditor.setTitle("设置");
-            configEditor.setResizable(false);
-            configEditor.initModality(Modality.APPLICATION_MODAL);
+            Stage configEditorStage = new Stage();
+            Scene configEditorScene = new Scene(loader.load(), 400, 600);
+            configEditorScene.getStylesheets().add(Config.getStyle("ConfigEditor.css").toExternalForm());
+            configEditorStage.setScene(configEditorScene);
+
+            configEditorStage.setTitle("设置");
+            configEditorStage.setResizable(false);
+            configEditorStage.initModality(Modality.APPLICATION_MODAL);
             // 关闭配置编辑器后刷新高亮颜色
-            configEditor.setOnHidden(event -> fileTable.refresh());
+            configEditorStage.setOnHidden(event -> fileTable.refresh());
 
-            configEditor.showAndWait();
+            configEditorStage.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1165,16 +1172,19 @@ public final class AppController implements Initializable {
      */
     @FXML private void aboutUs() {
         try {
-            Stage aboutUsPage = new Stage();
             FXMLLoader loader = new FXMLLoader(Config.getLayout("AboutUs.fxml"));
-            aboutUsPage.setScene(new Scene(loader.load(), 400, 360));
+
+            Stage aboutUsStage = new Stage();
+            Scene aboutUsScene = new Scene(loader.load(), 400, 360);
+            aboutUsScene.getStylesheets().add(Config.getStyle("AboutUs.css").toExternalForm());
+            aboutUsStage.setScene(aboutUsScene);
+
             loader.<AboutUsController>getController().setHostServices(services);
+            aboutUsStage.setTitle("关于我们");
+            aboutUsStage.setResizable(false);
+            aboutUsStage.initModality(Modality.APPLICATION_MODAL);
 
-            aboutUsPage.setTitle("关于我们");
-            aboutUsPage.setResizable(false);
-            aboutUsPage.initModality(Modality.APPLICATION_MODAL);
-
-            aboutUsPage.showAndWait();
+            aboutUsStage.showAndWait();
         } catch (Exception e) {
             e.printStackTrace();
         }
