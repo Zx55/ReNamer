@@ -222,7 +222,7 @@ public final class RuleEditorController implements Initializable {
             case 8:
                 caseRuleMode.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
-                        caseRuleDelimiter.setDisable(!getToggleText(newValue).equals("分隔符隔开的每个单词首字母大写"));
+                        caseRuleDelimiter.setDisable(!getToggleText(newValue).equals("以              作为分隔符隔开的每个单词首字母大写"));
                     }
                 });
                 break;

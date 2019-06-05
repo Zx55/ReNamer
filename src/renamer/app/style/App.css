@@ -1,16 +1,86 @@
-#toolBarButton {
-    -fx-background-insets: 0;
-    -fx-background-color: #f4f4f4;
+.button {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
-#toolBarButton:hover {
-    -fx-background-color: #e2e2e2;
+#addFileButton {
+    -fx-background-image: url('../img/AddFileNormal.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
 }
 
-#toolBarButton:pressed {
-    -fx-background-color: #d3d3d3;
+#addFileButton:hover {
+    -fx-background-image: url('../img/AddFilePress.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
 }
 
-#tableNoCol {
-    -fx-alignment: CENTER-RIGHT;
+#addFileButton:pressed {
+    -fx-background-image: url('../img/AddFilePress.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
 }
+
+#addDirButton {
+    -fx-background-image: url('../img/AddFolderNormal.png');
+    -fx-background-size: 132px 48px;
+    background-position: 100％ 0％;
+}
+
+#addDirButton:hover {
+    -fx-background-image: url('../img/AddFolderHover.png');
+    -fx-background-size: 132px 48px;
+    background-position: 100％ 0％;
+}
+
+#addDirButton:pressed {
+    -fx-background-image: url('../img/AddFolderPress.png');
+    -fx-background-size: 132px 48px;
+    background-position: 100％ 0％;
+}
+
+#addRuleButton {
+    -fx-background-image: url('../img/AddRuleNormal.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
+}
+
+#addRuleButton:hover {
+    -fx-background-image: url('../img/AddRuleHover.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
+}
+
+#addRuleButton:pressed {
+    -fx-background-image: url('../img/AddRulePress.png');
+    -fx-background-size: 120px 48px;
+    background-position: 100％ 0％;
+}
+
+#renameButton {
+    -fx-background-image: url('../img/RenameNormal.png');
+    -fx-background-size: 108px 48px;
+    -fx-background-position: 100％ 0％;
+}
+
+#renameButton:hover {
+    -fx-background-image: url('../img/RenameHover.png');
+    -fx-background-size: 108px 48px;
+    -fx-background-position: 100％ 0％;
+}
+
+#renameButton:pressed {
+    -fx-background-image: url('../img/RenamePress.png');
+    -fx-background-size: 108px 48px;
+    -fx-background-position: 100％ 0％;
+}
+
+#rootBackground {
+    -fx-background-color: #f9f9f9;
+}
+
+/*
+#backGround1{
+    -fx-background-color: #e1e1e1;
+}
+*/

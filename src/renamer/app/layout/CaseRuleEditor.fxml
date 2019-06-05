@@ -28,32 +28,22 @@
             </FXCollections>
         </items>
     </ChoiceBox>
-    <RadioButton layoutX="60.0" layoutY="100.0" mnemonicParsing="false" selected="true" text="分隔符隔开的每个单词首字母大写">
+    <RadioButton layoutX="59.0" layoutY="94.0" mnemonicParsing="false" selected="true"
+                 text="以              作为分隔符隔开的每个单词首字母大写">
         <toggleGroup>
             <ToggleGroup fx:id="caseRuleMode"/>
         </toggleGroup>
     </RadioButton>
-    <TextField fx:id="caseRuleDelimiter" layoutX="317.0" layoutY="94.0" prefHeight="30.0" prefWidth="76.0"/>
+    <TextField fx:id="caseRuleDelimiter" layoutX="98.0" layoutY="89.0" prefHeight="25.0" prefWidth="40.0"/>
     <RadioButton layoutX="60.0" layoutY="142.0" mnemonicParsing="false" text="首字母大写" toggleGroup="$caseRuleMode"/>
     <RadioButton layoutX="60.0" layoutY="184.0" mnemonicParsing="false" text="全部大写" toggleGroup="$caseRuleMode"/>
-    <RadioButton layoutX="300.0" layoutY="184.0" mnemonicParsing="false" text="全部小写" toggleGroup="$caseRuleMode">
-        <font>
-            <Font size="13.0"/>
-        </font>
-    </RadioButton>
-    <RadioButton layoutX="60.0" layoutY="226.0" mnemonicParsing="false" text="反转大小写" toggleGroup="$caseRuleMode">
-        <font>
-            <Font size="13.0"/>
-        </font>
-    </RadioButton>
-    <CheckBox fx:id="caseRuleIgnore" layoutX="60.0" layoutY="270.0" mnemonicParsing="false" selected="true"
-              text="忽略扩展名">
-        <font>
-            <Font size="13.0"/>
-        </font>
-    </CheckBox>
-    <Button fx:id="saveButton" layoutX="120.0" layoutY="315.0" mnemonicParsing="false" onAction="#saveCaseRule"
-            prefHeight="30.0" prefWidth="150.0" text="确定">
+    <RadioButton layoutX="310.0" layoutY="181.0" mnemonicParsing="false" text="全部小写" toggleGroup="$caseRuleMode"/>
+    <RadioButton layoutX="60.0" layoutY="226.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="122.0" text="反转大小写"
+                 toggleGroup="$caseRuleMode"/>
+    <CheckBox fx:id="caseRuleIgnore" layoutX="60.0" layoutY="275.0" mnemonicParsing="false" selected="true"
+              text="忽略扩展名"/>
+    <Button id="YesButton" fx:id="saveButton" layoutX="120.0" layoutY="315.0" mnemonicParsing="false"
+            onAction="#saveCaseRule" prefHeight="30.0" prefWidth="150.0" text="确定">
         <font>
             <Font size="13.0"/>
         </font>

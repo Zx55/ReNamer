@@ -79,8 +79,8 @@
             <Font size="13.0"/>
         </font>
     </CheckBox>
-    <Button fx:id="saveButton" layoutX="120.0" layoutY="315.0" mnemonicParsing="false" onAction="#savePaddingRule"
-            prefHeight="30.0" prefWidth="150.0" text="确定">
+    <Button id="YesButton" fx:id="saveButton" layoutX="120.0" layoutY="315.0" mnemonicParsing="false"
+            onAction="#savePaddingRule" prefHeight="30.0" prefWidth="150.0" text="确定">
         <font>
             <Font size="13.0"/>
         </font>

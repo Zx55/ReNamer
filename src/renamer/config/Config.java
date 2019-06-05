@@ -251,6 +251,6 @@ public final class Config {
     }
 
     public static String getVersion() {
-        return "Version  0.2.0-alpha";
+        return "Version  0.3.0-alpha";
     }
 }

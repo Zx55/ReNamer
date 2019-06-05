@@ -68,7 +68,7 @@ public final class SerializeRule implements Rule, Serializable {
         }
     }
 
-    // 序列化增量
+    // 序列化
     private Increment increment;
     // 填充0补足长度
     private int paddingZeroLength;
