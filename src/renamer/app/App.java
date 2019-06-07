@@ -14,6 +14,7 @@ import renamer.config.Config;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -28,12 +29,13 @@ public final class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(Config.getLayout("App.fxml"));
-        Scene app = new Scene(loader.load(), 500, 700);
+        Scene app = new Scene(loader.load(), 490, 700);
         app.getStylesheets().add(Config.getStyle("App.css").toExternalForm());
         primaryStage.setScene(app);
         AppController controller = loader.getController();
 
         primaryStage.setTitle("ReNamer");
+        primaryStage.getIcons().add(new Image(Config.getImage("Title.png")));
         primaryStage.setResizable(false);
         controller.setHostServices(getHostServices());
         primaryStage.setOnCloseRequest(event -> {

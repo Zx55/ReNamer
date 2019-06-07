@@ -12,6 +12,7 @@ package renamer.config;
 import renamer.app.App;
 import renamer.util.Util;
 
+import java.io.InputStream;
 import java.net.URL;
 
 import javafx.scene.control.Alert;
@@ -246,8 +247,8 @@ public final class Config {
         return App.class.getResource("style/" + stylesheet);
     }
 
-    public static URL getImage(String image) {
-        return App.class.getResource("img/" + image);
+    public static InputStream getImage(String image) {
+        return App.class.getResourceAsStream("img/" + image);
     }
 
     public static String getVersion() {

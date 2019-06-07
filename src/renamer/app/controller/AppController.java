@@ -382,10 +382,9 @@ public final class AppController implements Initializable {
      * @param <T> {@code TableView}中存储的对象类型
      */
     private <T> void dragDropOnLast(TableView<T> table) {
-        int dropIndex = table.getItems().size();
         removeSelectionsFromTable(table);
         table.getSelectionModel().clearSelection();
-        addSelectionToTable(table, dropIndex);
+        addSelectionToTable(table, table.getItems().size());
     }
 
     /**
@@ -887,7 +886,7 @@ public final class AppController implements Initializable {
             FXMLLoader loader = new FXMLLoader(Config.getLayout(layoutPath));
 
             Stage ruleEditorStage = new Stage();
-            Scene ruleEditorScene = new Scene(loader.load(), 600, 385);
+            Scene ruleEditorScene = new Scene(loader.load());
             ruleEditorScene.getStylesheets().add(Config.getStyle("RuleEditor.css").toExternalForm());
             ruleEditorStage.setScene(ruleEditorScene);
 
@@ -1048,7 +1047,7 @@ public final class AppController implements Initializable {
             FXMLLoader loader = new FXMLLoader(Config.getLayout("ConfigEditor.fxml"));
 
             Stage configEditorStage = new Stage();
-            Scene configEditorScene = new Scene(loader.load(), 400, 600);
+            Scene configEditorScene = new Scene(loader.load());
             configEditorScene.getStylesheets().add(Config.getStyle("ConfigEditor.css").toExternalForm());
             configEditorStage.setScene(configEditorScene);
 
@@ -1175,7 +1174,7 @@ public final class AppController implements Initializable {
             FXMLLoader loader = new FXMLLoader(Config.getLayout("AboutUs.fxml"));
 
             Stage aboutUsStage = new Stage();
-            Scene aboutUsScene = new Scene(loader.load(), 400, 360);
+            Scene aboutUsScene = new Scene(loader.load());
             aboutUsScene.getStylesheets().add(Config.getStyle("AboutUs.css").toExternalForm());
             aboutUsStage.setScene(aboutUsScene);
 
