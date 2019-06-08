@@ -1,6 +1,0 @@
-# Renamer
-
-## Introduction
-
-## Features
-
